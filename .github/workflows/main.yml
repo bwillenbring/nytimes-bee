@@ -42,4 +42,3 @@ jobs:
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   AWS_REGION: ${{ secrets.AWS_REGION }}
                   SOURCE_DIR: 'cypress/fixtures'
-                  DEST_DIR: 'test'

@@ -53,7 +53,10 @@ describe('New York Spelling Bee Word Collector', function () {
 
                     // Write a text file to disk of the new dictionary
                     // TODO: Replace var `new_words` with `d_words_new` 👇🏽
-                    cy.writeFile(formatFileName(), new_words.join('\n'))
+                    cy.writeFile(
+                        `./cypress/fixtures/dictionary_standard_new.txt`,
+                        new_words.join('\n')
+                    )
                     // --------------------------------------------------
                     // TODO: Move the new file into the s3 bucket
                     // TODO: Git commit the new words

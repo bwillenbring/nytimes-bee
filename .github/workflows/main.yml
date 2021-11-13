@@ -30,6 +30,7 @@ jobs:
               run: |
                   npm i
                   npx cypress run
+                  cp cypress/fixtures/*.txt aws/
 
             # This is the step that will transfer files to the s3 bucket
             - name: Publish new dictionary file to nytimes s3 bucket

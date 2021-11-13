@@ -1,3 +1,9 @@
+# Mac stuff 
+*.DS_STORE*
+
+# Text files up at the top level 
+*.txt
+
 # Logs
 logs
 *.log

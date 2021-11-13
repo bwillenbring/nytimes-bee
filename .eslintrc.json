@@ -1,0 +1,19 @@
+{
+    "root": true,
+    "env": {
+        "browser": true,
+        "commonjs": true,
+        "es2021": true,
+        "node": true,
+        "cypress/globals": true
+    },
+    "plugins": ["cypress"],
+    "extends": ["eslint:recommended", "prettier", "plugin:sonarjs/recommended"],
+    "parserOptions": {
+        "ecmaVersion": 13
+    },
+    "rules": {
+        "no-unused-vars": "warn",
+        "sonarjs/cognitive-complexity": ["error", 15]
+    }
+}

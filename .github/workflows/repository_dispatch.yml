@@ -1,0 +1,16 @@
+# This workflow fires when the payload
+name: Repository Dispatch workflow
+on:
+    repository_dispatch:
+        types: test
+
+# Jobs can run sequentially or in parallel
+jobs:
+    print-stuff:
+      name: Print Stuff
+        runs-on: ubuntu-latest 
+        steps:
+          - uses: actions/checkout@v2
+          - run: |
+            echo Client Payload follows...
+            echo ${{ github.event.client_payload }}

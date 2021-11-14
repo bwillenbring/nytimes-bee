@@ -7,10 +7,10 @@ on:
 # Jobs can run sequentially or in parallel
 jobs:
     print-stuff:
-      name: Print Stuff
-        runs-on: ubuntu-latest 
+        name: Print Stuff
+            runs-on: ubuntu-latest 
         steps:
-          - uses: actions/checkout@v2
-          - run: |
-            echo Client Payload follows...
-            echo ${{ github.event.client_payload }}
+            - uses: actions/checkout@v2
+            - run: |
+              echo Client Payload follows...
+              echo ${{ github.event.client_payload }}

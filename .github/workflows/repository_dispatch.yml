@@ -8,9 +8,9 @@ on:
 jobs:
     print-stuff:
         name: Print Stuff
-            runs-on: ubuntu-latest 
-            steps:
-                - uses: actions/checkout@v2
-                - run: |
-                  echo Client Payload follows...
-                  echo ${{ github.event.client_payload }}
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v2
+            - run: |
+              echo Client Payload follows...
+              echo ${{ github.event.client_payload }}

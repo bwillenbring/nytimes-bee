@@ -1,6 +1,9 @@
 # Mac stuff 
 *.DS_STORE*
 
+# Any cypress videos 
+cypress/videos/*
+
 # Text files up at the top level 
 *.txt
 

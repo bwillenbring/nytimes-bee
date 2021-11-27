@@ -10,5 +10,6 @@ jobs:
         runs-on: ubuntu-latest
         steps:
             - uses: actions/checkout@v2
+            - name: Payload
               run: |
                   echo ${{ github.event.client_payload }}

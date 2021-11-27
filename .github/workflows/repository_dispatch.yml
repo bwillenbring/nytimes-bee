@@ -2,6 +2,7 @@
 name: Repository Dispatch workflow
 on:
     workflow_dispatch:
+    repository_dispatch:
 
 # Jobs can run sequentially or in parallel
 jobs:

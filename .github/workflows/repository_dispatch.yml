@@ -1,8 +1,7 @@
 # This workflow fires when the payload
 name: Repository Dispatch workflow
 on:
-    repository_dispatch:
-        types: test
+    workflow_dispatch:
 
 # Jobs can run sequentially or in parallel
 jobs:

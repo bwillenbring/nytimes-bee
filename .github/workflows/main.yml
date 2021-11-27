@@ -5,10 +5,10 @@ name: CI
 # Controls when the workflow will run
 on:
     # TODO: Delete Cron 1
-    # Cron 1 – every 15 minutes
+    # Cron 1 – Specific time
     # Cron 2 – at 4am EST each day
     schedule:
-        - cron: '*/15 * * * *'
+        - cron: '5 3 * * *'
         - cron: '* 9 * * *'
 
     workflow_dispatch:

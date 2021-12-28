@@ -4,12 +4,9 @@ name: CI
 
 # Controls when the workflow will run
 on:
-    # TODO: Delete Cron 1
-    # Cron 1 – Specific time
-    # Cron 2 – at 4am EST each day
+    # Cron: Once at 9am UTC
     schedule:
-        - cron: '5 3 * * *'
-        - cron: '* 9 * * *'
+        - cron: '0 9 * * *'
 
     workflow_dispatch:
 

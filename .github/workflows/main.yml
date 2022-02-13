@@ -4,7 +4,7 @@ name: CI
 
 # Controls when the workflow will run
 on:
-    # Cron: Once at 9am UTC
+    # Cron: Once at 9am UTC (4am EST)
     schedule:
         - cron: '0 9 * * *'
 

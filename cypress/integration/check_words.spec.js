@@ -13,7 +13,28 @@ const formatFileName = () => {
     return `dictionary_new_${month}_${day}_${year}.txt`
 }
 
+Cypress.Commands.add('getLetters', function () {
+    let letters = []
+    cy.get('div.hive')
+        .within((hive) => {
+            // Get the required letter
+            cy.get('.hive-cell.center .cell-letter')
+                .invoke('text')
+                .then((t) => letters.push(t))
+        })
+        .then(() => {
+            // Get the other letters
+            cy.get('.hive-cell.outer .cell-letter').each(($letter) => {
+                letters.push($letter.text())
+            })
+        })
+        .then(() => {
+            return letters.join('')
+        })
+})
+
 describe('New York Spelling Bee Word Collector', function () {
+    before(() => cy.viewport('macbook-16'))
     it('gets yesterdays words', function () {
         const dictionary_endpoint =
             'https://6ohunjaa18.execute-api.us-east-2.amazonaws.com/prod/nytimes-spelling-bee'
@@ -23,6 +44,8 @@ describe('New York Spelling Bee Word Collector', function () {
         // Go to NYTimes spelling bee, and navigate to yesterday's words
         cy.visit('/puzzles/spelling-bee')
         cy.get('#portal-game-moments button:contains("Play")').click()
+
+        // Now, get yesterday's words
         cy.get(`span[role="presentation"]:contains("Yesterday")`).click()
 
         // Collect all the words from yesterday – LOWERCASED
@@ -39,7 +62,6 @@ describe('New York Spelling Bee Word Collector', function () {
                     // Create an Array consisting only of words of 4 or more chars
                     // WE WILL ASSUME THESE WORDS ARE LOWERCASED ALSO
                     let d_words = resp.body.body.words
-                    // let d_words = content.split('\n').filter(word => word.length >= 4)
 
                     // Create an array of NEW words that appear in yesterday's words
                     // that are not already in the dictionary (using difference function)
@@ -47,9 +69,35 @@ describe('New York Spelling Bee Word Collector', function () {
                         difference(new Set(y_words), new Set(d_words))
                     )
 
+                    // Dismiss yesterday's words
+                    cy.get('.sb-modal-frame.yesterday [role="button"]').click()
+
                     // Create a new (sorted) array of dictionary words from the combo
                     // of existing dictionary words + new words (from yesterday)
                     let d_words_new = [...d_words, ...new_words].sort()
+
+                    // Get today's letters
+                    cy.getLetters().then((letters) => {
+                        // Let's write a file
+                        cy.log(`Todays letters...${letters}`)
+                        cy.writeFile(
+                            `./cypress/fixtures/todays_bee.json`,
+                            JSON.stringify(
+                                {
+                                    todays_letters: letters,
+                                    total_words_from_yesterday: y_words.length,
+                                    total_words_added_from_yesterday:
+                                        new_words.length,
+                                    total_words_in_new_dictionary:
+                                        d_words_new.length,
+                                    new_words_from_yesterday: new_words,
+                                    all_words_from_yesterday: y_words,
+                                },
+                                undefined,
+                                2
+                            )
+                        )
+                    })
 
                     // Write a text file to disk of the new dictionary
                     // TODO: Replace var `new_words` with `d_words_new` 👇🏽

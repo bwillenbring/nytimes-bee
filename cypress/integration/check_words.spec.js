@@ -61,7 +61,7 @@ describe('New York Spelling Bee Word Collector', function () {
                 }).then((resp) => {
                     // Create an Array consisting only of words of 4 or more chars
                     // WE WILL ASSUME THESE WORDS ARE LOWERCASED ALSO
-                    let d_words = resp.body.body.words
+                    let d_words = resp.body.body.words || []
 
                     // Create an array of NEW words that appear in yesterday's words
                     // that are not already in the dictionary (using difference function)

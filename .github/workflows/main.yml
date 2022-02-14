@@ -1,8 +1,8 @@
-# This is a basic workflow to help you get started with Actions
+# Name of this workflow
 
 name: CI
 
-# Controls when the workflow will run
+# Controls when the workflow will run – only on cron or manual workflow dispatch
 on:
     # Cron: Once at 9am UTC (4am EST)
     schedule:
@@ -10,22 +10,20 @@ on:
 
     workflow_dispatch:
 
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+# This workflow consists of 1 job: `build`
 jobs:
-    # This workflow contains a single job called "build"
     build:
-        # The type of runner that the job will run on
+        # The test runner the job will run on
         runs-on: ubuntu-latest
 
-        # Steps represent a sequence of tasks that will be executed as part of the job
         steps:
             # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
             - uses: actions/checkout@v2
 
-            # Runs a set of commands using the runners shell
+            # Install – always use `npm ci` so that package-lock.json is used
             - name: Run Cypress
               run: |
-                  npm i
+                  npm ci
                   npx cypress run
 
             # This is the step that will transfer files to the s3 bucket

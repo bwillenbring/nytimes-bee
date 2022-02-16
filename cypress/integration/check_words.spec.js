@@ -5,14 +5,6 @@
 const difference = (set1, set2) =>
     new Set([...set1].filter((item) => !set2.has(item)))
 
-const formatFileName = () => {
-    const now = new Date()
-    const month = String(now.getMonth()).padStart(2, '0')
-    const day = String(now.getDate()).padStart(2, '0')
-    const year = String(now.getFullYear())
-    return `dictionary_new_${month}_${day}_${year}.txt`
-}
-
 Cypress.Commands.add('getLetters', function () {
     let letters = []
     cy.get('div.hive')
@@ -35,6 +27,7 @@ Cypress.Commands.add('getLetters', function () {
 
 describe('New York Spelling Bee Word Collector', function () {
     before(() => cy.viewport('macbook-16'))
+
     it('gets yesterdays words', function () {
         const dictionary_endpoint =
             'https://6ohunjaa18.execute-api.us-east-2.amazonaws.com/prod/nytimes-spelling-bee'
@@ -65,9 +58,10 @@ describe('New York Spelling Bee Word Collector', function () {
 
                     // Create an array of NEW words that appear in yesterday's words
                     // that are not already in the dictionary (using difference function)
-                    let new_words = Array.from(
-                        difference(new Set(y_words), new Set(d_words))
-                    )
+                    let new_words =
+                        Array.from(
+                            difference(new Set(y_words), new Set(d_words))
+                        ) || []
 
                     // Dismiss yesterday's words
                     cy.get('.sb-modal-frame.yesterday [role="button"]').click()

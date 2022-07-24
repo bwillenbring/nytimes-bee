@@ -1,5 +1,11 @@
 /// <reference types="cypress" />
 
+/**
+ * What this spec does:
+ *  - Writes a file to disk: /cypress/fixtures/todays_bee.json
+ *  - Note: ☝🏽 every file in fixtures is copied over to the S3 bucket 
+ */
+
 // Accepts either 2 arrays or 2 sets (or some combo of each)
 // Returns a Set of items that ARE in set2 NOT CONTAINED by set1
 const difference = (set1, set2) =>

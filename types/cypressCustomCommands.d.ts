@@ -9,7 +9,7 @@ declare namespace Cypress {
         removeFluff(post: any): Chainable<any>
         getWordCount(text: any): Chainable<any>
         makeMD(post: any): Chainable<any>
-        loginToSquarespace(email: any, password: any): Chainable<any>
+        loginToSubstack(email: any, password: any): Chainable<any>
         navigateToDashboard(): Chainable<any>
         deleteSubstackPost(undefined?: object): Chainable<any>
         findSubstackPostsByTitle(title?: any): Chainable<any>

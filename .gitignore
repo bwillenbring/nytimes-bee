@@ -1,6 +1,10 @@
 # Mac stuff 
 *.DS_STORE*
 
+# Generated files 
+cypress/fixtures/gameData*
+cypress/fixtures/clues*
+
 # Any cypress videos 
 cypress/videos/*
 

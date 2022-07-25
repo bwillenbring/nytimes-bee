@@ -1,4 +1,10 @@
 {
     "baseUrl": "https://www.nytimes.com",
+    "urls": {
+        "nytimes": "https://nytimes.com",
+        "substack": "https://jeuxdemots.substack.com",
+        "substackSignin": "https://substack.com/sign-in?redirect=%2F&for_pub=jeuxdemots"
+    },
+    "experimentalSessionSupport": true,
     "watchForFileChanges": false
 }

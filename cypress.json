@@ -6,5 +6,8 @@
         "substackSignin": "https://substack.com/sign-in?redirect=%2F&for_pub=jeuxdemots"
     },
     "experimentalSessionSupport": true,
-    "watchForFileChanges": false
+    "watchForFileChanges": false,
+    "videosFolder": "cypress/fixtures",
+    "screenshotsFolder": "cypress/fixtures",
+    "trashAssetsBeforeRuns": false
 }

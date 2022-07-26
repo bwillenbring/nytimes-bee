@@ -24,7 +24,7 @@ jobs:
             - name: Run Cypress
               run: |
                   npm ci --legacy-peer-deps
-                  npx cypress run -e 'SQ_EMAIL=${{ secrets.SQ_EMAIL }},SQ_PASSWORD=${{ secrets.SQ_PASSWORD }},API_URL_T=${{ secrets.API_URL_T }},API_URL_D=${{ secrets.API_URL_D }},API_KEY_T=${{ secrets.API_KEY_T }},API_KEY_D=${{ secrets.API_KEY_D }}'
+                  npx cypress run -s 'cypress/fixtures/02*' -e 'SQ_EMAIL=${{ secrets.SQ_EMAIL }},SQ_PASSWORD=${{ secrets.SQ_PASSWORD }},API_URL_T=${{ secrets.API_URL_T }},API_URL_D=${{ secrets.API_URL_D }},API_KEY_T=${{ secrets.API_KEY_T }},API_KEY_D=${{ secrets.API_KEY_D }}'
 
             # This is the step that will transfer files to the s3 bucket
             - name: Publish new dictionary file to nytimes s3 bucket

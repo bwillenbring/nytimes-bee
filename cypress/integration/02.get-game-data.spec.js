@@ -10,11 +10,6 @@
  *  - Note: ☝🏽 every file in fixtures is copied over to the S3 bucket
  */
 
-Cypress.on('uncaught:exception', (err, runnable) => {
-    // Prevents Cypress from failing the test
-    return false
-})
-
 describe('New York Spelling Bee Word Collector', function () {
     before(function () {
         // Explicitly set the baseUrl
@@ -37,7 +32,8 @@ describe('New York Spelling Bee Word Collector', function () {
     }) // end test case
 })
 
-describe.only('Substack Post Creation', () => {
+// TODO: Fix post creation — currently blocked by recaptcha
+describe.skip('Substack Post Creation', () => {
     before(() => {
         // Explicitly set the baseUrl
         Cypress.config(
@@ -59,7 +55,7 @@ describe.only('Substack Post Creation', () => {
         cy.loginToSubstack(email, password)
     })
 
-    it.skip('creates a substack post draft', () => {
+    it('creates a substack post draft', () => {
         // Assume that at this point, clues.html is already generated
         // Set up vars
         let dayOfWeek = Cypress.dayjs().format('dddd')
@@ -77,22 +73,4 @@ describe.only('Substack Post Creation', () => {
             })
         })
     }) // end test case
-
-    it('fails', () => {
-        assert.isTrue(false)
-    })
-
-    // it('visits a page', () => {
-    //     cy.visit('/p/nyt-cluesmon-25-july-2022').then(() => {
-    //         cy.waitForPageToLoad()
-    //         cy.contains(`Monday's New York Times Spelling Bee`)
-    //     })
-    // })
-
-    // it('visits a second page', () => {
-    //     cy.visit('/p/nyt-cluessun-24-july-2022').then(() => {
-    //         cy.waitForPageToLoad()
-    //         cy.contains(`Sunday's New York Times Spelling Bee`)
-    //     })
-    // })
 })

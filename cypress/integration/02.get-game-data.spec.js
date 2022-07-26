@@ -10,6 +10,11 @@
  *  - Note: ☝🏽 every file in fixtures is copied over to the S3 bucket
  */
 
+Cypress.on('uncaught:exception', (err, runnable) => {
+    // Prevents Cypress from failing the test
+    return false
+})
+
 describe('New York Spelling Bee Word Collector', function () {
     before(function () {
         // Explicitly set the baseUrl
@@ -44,8 +49,8 @@ describe.only('Substack Post Creation', () => {
     // Get API credentials from cypress env vars
     // These are injected at runtime in CI, as github secrets
     const [email, password] = [
-        Cypress.env('SQ_EMAIL'),
-        Cypress.env('SQ_PASSWORD'),
+        Cypress.env('SQ_EMAIL') || 'foo',
+        Cypress.env('SQ_PASSWORD') || 'bar',
     ]
 
     beforeEach(() => {
@@ -73,17 +78,21 @@ describe.only('Substack Post Creation', () => {
         })
     }) // end test case
 
-    it('visits a page', () => {
-        cy.visit('/p/nyt-cluesmon-25-july-2022').then(() => {
-            cy.waitForPageToLoad()
-            cy.contains(`Monday's New York Times Spelling Bee`)
-        })
+    it('fails', () => {
+        assert.isTrue(false)
     })
 
-    it('visits a second page', () => {
-        cy.visit('/p/nyt-cluessun-24-july-2022').then(() => {
-            cy.waitForPageToLoad()
-            cy.contains(`Sunday's New York Times Spelling Bee`)
-        })
-    })
+    // it('visits a page', () => {
+    //     cy.visit('/p/nyt-cluesmon-25-july-2022').then(() => {
+    //         cy.waitForPageToLoad()
+    //         cy.contains(`Monday's New York Times Spelling Bee`)
+    //     })
+    // })
+
+    // it('visits a second page', () => {
+    //     cy.visit('/p/nyt-cluessun-24-july-2022').then(() => {
+    //         cy.waitForPageToLoad()
+    //         cy.contains(`Sunday's New York Times Spelling Bee`)
+    //     })
+    // })
 })

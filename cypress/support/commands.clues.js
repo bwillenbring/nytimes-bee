@@ -157,7 +157,7 @@ const formatHeader = (gameData) => {
         .join('&nbsp;&nbsp;')
 
     // 1. Add the tagline
-    let tagline = `<p>Clues are generated daily by <a href="https://ben-willenbring.com">Ben Willenbring</a> from his home in Brooklyn.</p><img src="https://images.squarespace-cdn.com/content/v1/5dabaee11e9d9809a8816556/1604540401455-POGIZF5QUKC77HZZ2GO9/typing-animated-gif-letterbox.gif?format=1500w"/>`
+    let tagline = `<p>Clues for the <a href="https://www.nytimes.com/puzzles/spelling-bee" target="_blank">New York Times Spelling Bee</a> are generated daily by <a href="https://ben-willenbring.com/about">Ben Willenbring</a> from his home in Brooklyn.</p><img src="https://images.squarespace-cdn.com/content/v1/5dabaee11e9d9809a8816556/1604540401455-POGIZF5QUKC77HZZ2GO9/typing-animated-gif-letterbox.gif?format=1500w"/>`
 
     // 2. title... Letters: m  e  g  i  h  i  n  t
     let title = `${tagline}<h1>Letters:  ${formatedLetters}</h1>`

@@ -5,9 +5,9 @@ name: CI
 # Controls when the workflow will run – only on cron or manual workflow dispatch
 on:
     # Cron: Once at 7am UTC, and again at 9am UTC
-    schedule:
-        - cron: '0 7 * * *'
-        - cron: '0 9 * * *'
+    # schedule:
+    #     - cron: '0 7 * * *'
+    #     - cron: '0 9 * * *'
 
     workflow_dispatch:
 

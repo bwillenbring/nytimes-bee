@@ -1,5 +1,9 @@
 name: Playwright Tests
 on:
+    # Cron: Once at 7am UTC, and again at 9am UTC
+    schedule:
+        - cron: '0 7 * * *'
+        - cron: '0 9 * * *'
     workflow_dispatch:
     # push:
     #     branches: [main, master]

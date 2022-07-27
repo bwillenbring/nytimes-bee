@@ -25,7 +25,7 @@ jobs:
                   npx cypress run -s 'cypress/integration/02*' -e 'SQ_EMAIL=${{ secrets.SQ_EMAIL }},SQ_PASSWORD=${{ secrets.SQ_PASSWORD }},API_URL_T=${{ secrets.API_URL_T }},API_URL_D=${{ secrets.API_URL_D }},API_KEY_T=${{ secrets.API_KEY_T }},API_KEY_D=${{ secrets.API_KEY_D }}'
 
             - name: Run Playwright tests
-              run: SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' npx playwright test substack
+              run: SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' npx playwright test squarespace
             - uses: actions/upload-artifact@v2
               if: always()
               with:

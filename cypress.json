@@ -9,5 +9,6 @@
     "watchForFileChanges": false,
     "videosFolder": "cypress/fixtures",
     "screenshotsFolder": "cypress/fixtures",
-    "trashAssetsBeforeRuns": false
+    "trashAssetsBeforeRuns": false,
+    "video": false
 }

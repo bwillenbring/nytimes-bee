@@ -213,7 +213,7 @@ const formatClues = (clues) => {
             )
         })
 
-        HTML += `<ol>${words_within_grp.join('\n')}</ol>`
+        HTML += `<ol start="${counter}">${words_within_grp.join('\n')}</ol>`
         // Increment counter
         counter += words_within_grp.length
     }

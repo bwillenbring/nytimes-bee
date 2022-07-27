@@ -1,6 +1,13 @@
 const { test, expect } = require('@playwright/test')
 const fs = require('fs')
 const shell = require('shelljs')
+const dayjs = require('dayjs')
+
+/**
+ *
+ * Important Notes
+ *
+ */
 
 const sleep = (duration = 1) => shell.exec(`sleep ${duration}`)
 
@@ -13,10 +20,17 @@ const read = (file_path, json = false) =>
 const email = process.env.SQ_EMAIL || 'foo'
 const password = process.env.SQ_PASSWORD || 'foo'
 
-//
-const postTitle = `NYT 🐝 Clues—Tue. 26 July, 2022`
-const postSubtitle = `Clues for Tuesday's New York Times Spelling Bee`
-const postBody = read('./cypress/fixtures/clues.html')
+// For post creation
+// timestamp (eg: Tue. 26 July, 2022)
+const now = dayjs()
+const dayString = now.format('dddd')
+
+// title and subtitle
+const postTitle = `NYT 🐝 Clues—${now.format('ddd. D MMMM, YYYY')}`
+const postSubtitle = `Clues for ${dayString}'s New York Times Spelling Bee`
+// TODO: Ensure postBody comes from clues.html
+// const postBody = read('./cypress/fixtures/clues.html')
+const postBody = '<p>Testing</p>'
 
 test('basic test', async ({ page }) => {
     // Go to the login page for substack

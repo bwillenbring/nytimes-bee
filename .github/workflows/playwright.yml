@@ -16,11 +16,16 @@ jobs:
                   node-version: '14.x'
             - name: Install dependencies
               run: npm ci
-            - name: Install Playwright Browsers
-              run: npx playwright install --with-deps
+
+            - name: Install only chromium Playwright Browser
+              run: npx playwright install chromium --with-deps
+
+            - name: Run Cypress
+              run: |
+                  npx cypress run -s 'cypress/integration/02*' -e 'SQ_EMAIL=${{ secrets.SQ_EMAIL }},SQ_PASSWORD=${{ secrets.SQ_PASSWORD }},API_URL_T=${{ secrets.API_URL_T }},API_URL_D=${{ secrets.API_URL_D }},API_KEY_T=${{ secrets.API_KEY_T }},API_KEY_D=${{ secrets.API_KEY_D }}'
+
             - name: Run Playwright tests
-              # run: npx playwright test
-              run: SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' npx playwright test
+              run: SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' npx playwright test substack
             - uses: actions/upload-artifact@v2
               if: always()
               with:

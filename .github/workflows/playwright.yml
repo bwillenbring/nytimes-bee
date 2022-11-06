@@ -1,9 +1,9 @@
 name: Playwright Tests
 on:
-    # Cron: Once at 7am UTC
+    # Cron: Once at 7am UTC (change to 8am UTC for DST)
     schedule:
-        - cron: '0 7 * * *'
-        # - cron: '0 9 * * *'
+        # - cron: '0 7 * * *'
+        - cron: '0 8 * * *'
 
     workflow_dispatch:
     # push:

@@ -35,12 +35,17 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
 
-    console.log('✅ Writing files to cypress/fixtures/')
-    const filePath1 = 'cypress/fixtures/clues.html'
-    utils.write(postBody, filePath1)
+    console.log('✅ Trying to write files to cypress/fixtures/')
+    const filePath1 = 'clues.html'
+    const filePath2 = filePath1.replace('.html', '.json')
 
-    const filePath2 = 'cypress/fixtures/clues.json'
-    utils.write(JSON.stringify(clues, undefined, 2), filePath2)
+    try {
+        utils.write(postBody, filePath1)
+        utils.write(JSON.stringify(clues, undefined, 2), filePath2)
+    } catch (err: any) {
+        console.log('Could not write files')
+        console.log(err.message)
+    }
 
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')

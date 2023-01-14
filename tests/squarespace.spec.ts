@@ -4,6 +4,8 @@ const dayjs = require('dayjs')
 const fs = require('fs')
 const sep = '-'.repeat(75)
 
+import { utils } from '../helpers'
+
 /**
  *
  * This spec logs into squarespace as Mauk Mulder, then does the following
@@ -12,42 +14,18 @@ const sep = '-'.repeat(75)
  *  - Steps through the form, and pastes html into the markdown input
  */
 
-// functions
-const sleep = (duration = 1) => shell.exec(`sleep ${duration}`)
-const read = (file_path, json = false) =>
-    json
-        ? JSON.parse(fs.readFileSync(file_path))
-        : fs.readFileSync(file_path, { encoding: 'utf8' })
-
 // From env vars
 const email = process.env.SQ_EMAIL
 const password = process.env.SS_PASSWORD
 
-// Timestamp for post creation (eg: Tue. 26 July, 2022)
-const now = dayjs()
-const dayString = now.format('dddd')
+// test.use({})
 
-// read gameData as json
-const gd = read('cypress/fixtures/gameData.json', true)
-let words = gd.today.answers
-words.sort()
-let validLetters = `\`${gd.today.centerLetter}\`  ${gd.today.outerLetters.join(
-    '  '
-)}`
-let excerpt = `## Letters: ${validLetters}
-- Total Answers: ${gd.today.answers.length}
-Pangrams: ${gd.today.pangrams.length}
-Words revealed in these clues: None! 🤣`
+test('basic test 00', async ({ page }, testInfo) => {
+    const postTitle = utils.getPostTitle()
+    const clues = await utils.getCluesAsJson(page)
+    const postBody = await utils.getPostBody(clues)
+    const postExcerpt = await utils.getPostExcerpt(clues)
 
-let commentedAnswers = `<div data-testid="for-the-cheaters" style="display:none !important;">${words.join(
-    ', '
-)}</div>`
-
-// title and subtitle
-const postTitle = `NYT 🐝 Clues—${now.format('ddd. D MMMM, YYYY')}`
-const postBody = read('./cypress/fixtures/clues.html') + '\n' + commentedAnswers
-
-test('basic test', async ({ page }) => {
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
 
@@ -56,19 +34,19 @@ test('basic test', async ({ page }) => {
     await page.fill('[type="password"]', password)
 
     // TODO: Remove when things stabilize
-    await page.screenshot({
-        path: './cypress/fixtures/playwright-login-page-screenshot.png',
-        fullPage: true,
+    await testInfo.attach('Squarespace Login', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
     })
 
     // Click Login
     await page.click('[data-test="login-button"]')
-    let opts = {
-        waitUntil: 'domcontentloaded',
-    }
+    // let opts = {
+    //     waitUntil: 'domcontentloaded',
+    // }
     // Ensure document is loaded
-    await page.waitForNavigation(opts)
-    sleep(1)
+    await page.waitForNavigation({ waitUntil: 'domcontentloaded' })
+    utils.sleep(1)
 
     // Navigate to Leftnav => NYTimes 🐝 Clues (very low on the leftnav of links)
     const leftNavTitle = `NYTimes 🐝 Clues`
@@ -77,18 +55,19 @@ test('basic test', async ({ page }) => {
     )
 
     // Ensure the page navigation is done
-    opts.url = /config\/pages\//
-    await page.waitForNavigation(opts)
-    sleep(1)
+    await page.waitForNavigation({
+        url: /config\/pages\//,
+    })
+    utils.sleep(1)
 
     // Make sure + btn is visble, then click it
     let plus_btn = await page.locator('[data-test="blog-add-item"]')
-    expect(plus_btn).toBeVisible()
+    await expect(plus_btn).toBeVisible()
     await plus_btn.click()
 
     // Make sure the blog post form is visible
     let form = await page.locator('.squarespace-managed-ui')
-    expect(form).toBeVisible()
+    await expect(form).toBeVisible()
 
     // Enter a title into [data-test="text"]
     await page.fill('input[data-test="text"]', postTitle)
@@ -100,13 +79,13 @@ test('basic test', async ({ page }) => {
 
     // Paste in the html AS MARKDOWN + comments
     await page.locator('.CodeMirror textarea').fill(postBody)
-    sleep(1)
+    utils.sleep(1)
 
     // Apply changes
     await page
         .locator('[data-test="dialog-saveAndClose"][value="Apply"]')
         .click()
-    sleep(1)
+    utils.sleep(1)
 
     // Set tags and hit enter
     await page
@@ -116,7 +95,7 @@ test('basic test', async ({ page }) => {
         .click()
     await page.fill('input[placeholder="Tags, comma separated"]', 'bee')
     await page.keyboard.press('Enter')
-    sleep(1)
+    utils.sleep(1)
 
     // Set comments
     await page
@@ -127,29 +106,30 @@ test('basic test', async ({ page }) => {
             hasText: 'Comments On',
         })
         .click()
-    sleep(1)
+    // sleep(1)
 
     // Set the Options tab
     await page.locator('[data-tab]', { hasText: 'Options' }).click()
-    sleep(1)
+    // sleep(1)
 
     // Scroll down to excerpt
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
         .scrollIntoViewIfNeeded()
     await page.locator('[data-testvalue="excerpt"] p.rte-placeholder').click()
-    sleep(1)
+    utils.sleep(1)
 
     // Type excerpt
     await page
         .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
-        .type(excerpt)
-    sleep(1)
+        .type(postExcerpt)
+    utils.sleep(1)
 
     // Save and close || publish
     // To save a draft: '[data-test="dialog-saveAndClose"]'
-    await page
-        .locator('[data-test="dialog-saveAndPublish"]')
-        .click({ force: true })
-    sleep(1)
+    await page.locator('[data-test="dialog-saveAndClose"]').click()
+    // await page
+    //     .locator('[data-test="dialog-saveAndPublish"]')
+    //     .click({ force: true })
+    utils.sleep(1)
 })

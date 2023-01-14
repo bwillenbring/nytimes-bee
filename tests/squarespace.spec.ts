@@ -30,6 +30,12 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     const postBody = await utils.getPostBody(clues)
     const postExcerpt = await utils.getPostExcerpt(clues)
 
+    // const postTitle = `Testing ${Date.now()}`
+    // const clues = { testing: true }
+    // const postBody =
+    //     'Another test — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tincidunt tortor ac rutrum efficitur. Duis a condimentum ex. Aenean ac gravida erat. Nulla tristique, est eu hendrerit luctus, diam urna hendrerit ante, id maximus elit urna sit amet eros. Suspendisse vitae purus leo. Donec id tempor ligula, sed vestibulum tortor. Etiam sapien libero, rutrum eget tincidunt eu, malesuada venenatis sapien. Proin quis ipsum vitae metus egestas placerat. Pellentesque in turpis euismod, finibus dolor vitae, placerat nibh. Pellentesque at aliquet turpis, non varius nulla.'
+    // const postExcerpt = `Wow\nyou are fast`
+
     console.log(`✅ postTitle:\n${postTitle}`)
     console.log(sep)
 
@@ -40,6 +46,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(sep)
 
     console.log('✅ DO NOT write files')
+    // TODO: FIX ME
     // const filePath1 = 'clues.html'
     // const filePath2 = filePath1.replace('.html', '.json')
 
@@ -67,28 +74,45 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     let form = await page.locator('.squarespace-managed-ui')
     await expect(form).toBeVisible()
 
+    let input
+
     // Enter a title into [data-test="text"]
     console.log('Setting title...')
-    await page.fill('input[data-test="text"]', postTitle)
+    input = await form.locator('input[data-test="text"]:visible')
+    await input.type(postTitle)
 
     // --------------------------------------------------
     // Insert a block of Markdown at the top point
     console.log('Adding html as markdown...')
-    await page.locator('.insert-point-icon').first().click({ force: true })
+
+    await page
+        .locator('[data-test="insert-point-trigger"]')
+        .first()
+        .click({ force: true })
+    // Choose the Markdown menu item
     await page.locator('#block-selector-button-markdown').click()
+    utils.sleep(3)
 
     // Paste in the html AS MARKDOWN + comments
+    // Note: Do not use .type() here, it is too slow
     await page.locator('.CodeMirror textarea').fill(postBody)
-    utils.sleep(1)
 
-    // Apply changes
+    let evt = page.waitForRequest(
+        'https://home-office-employee.squarespace.com/api/events/RecordEvent'
+    )
+
+    // Click Apply changes
     console.log('Applying changes...')
     await page
         .locator('[data-test="dialog-saveAndClose"][value="Apply"]')
         .click()
+
+    // Let's print the response...
+    const resp = await (await (await evt).response()).json()
+    console.log(resp)
     utils.sleep(1)
 
-    // Set tags and hit enter
+    // Set tags and hit enter (no xhr)
     console.log('Setting tags...')
     await page
         .locator('.text.dialog-element', {
@@ -99,7 +123,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await page.keyboard.press('Enter')
     utils.sleep(1)
 
-    // Set comments
+    // Set comments ON
     console.log('Setting comments...')
     await page
         .locator('.field-workflow-wrapper', { hasText: 'Comments Off' })
@@ -109,10 +133,12 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
             hasText: 'Comments On',
         })
         .click()
+    utils.sleep(1)
 
     // Set the Options tab
     console.log('Setting options...')
-    await page.locator('[data-tab]', { hasText: 'Options' }).click()
+    // await page.locator('[data-tab]', { hasText: 'Options' }).click()
+    await page.locator('[data-tab]:text("Options")').click()
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')
@@ -130,11 +156,18 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Save and close || publish
     console.log('Saving...')
+    const evtFinal = page.waitForRequest(
+        'https://home-office-employee.squarespace.com/api/events/RecordEvent'
+    )
+
     // To save a draft: '[data-test="dialog-saveAndClose"]'
     await page.locator('[data-test="dialog-saveAndClose"]').click()
     // await page
     //     .locator('[data-test="dialog-saveAndPublish"]')
     //     .click({ force: true })
-    utils.sleep(1)
+
+    const respFinal = await (await (await evtFinal).response()).json()
+    console.log(respFinal)
+    // utils.sleep(5)
     console.log('❤️	done')
 })

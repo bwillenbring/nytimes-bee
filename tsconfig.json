@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "target": "es2019",
+        "module": "commonjs",
+        "lib": ["es2021", "dom"],
+        "baseUrl": "./",
+        "paths": {
+            "@helpers/*": ["helpers/*"],
+            "@fixtures/*": ["fixtures/*"]
+        },
+        "types": ["node"]
+    },
+    "include": ["**/*.ts"],
+    "exclude": ["node_modules"]
+}

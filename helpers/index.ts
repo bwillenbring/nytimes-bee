@@ -366,8 +366,8 @@ const selectLeftNavItem = async (page: Page, leftNavTitle: string) => {
     // We'll wait for the xhr request's response, then print it
     const resp = await (await (await xhr).response()).json()
     console.log(`Response after navigating to ${leftNavTitle}...`)
-    console.log(`{ shouldDisplaOnPage: ${resp.shouldDisplayOnPage} }`)
-    utils.sleep(1)
+    console.log(`{ shouldDisplayOnPage: ${resp.shouldDisplayOnPage} }`)
+    utils.sleep(2)
 }
 
 const sleep = (duration: number = 1) => shell.exec(`sleep ${duration}`)

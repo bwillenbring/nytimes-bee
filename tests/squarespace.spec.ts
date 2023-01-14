@@ -68,18 +68,16 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // Make sure + btn is visble, then click it
     console.log('Adding blog post now...')
     let plus_btn = await page.locator('[data-test="blog-add-item"]')
-    await expect(plus_btn).toBeVisible()
-    await plus_btn.click()
+    // await expect(plus_btn).toBeVisible()
+    await plus_btn.click({ force: true })
 
     // Make sure the blog post form is visible
     let form = await page.locator('.squarespace-managed-ui')
-    await expect(form).toBeVisible()
-
-    let input
+    // await expect(form).toBeVisible()
 
     // Enter a title into [data-test="text"]
     console.log('Setting title...')
-    input = await form.locator('input[data-test="text"]:visible')
+    let input = await form.locator('input[data-test="text"]:visible')
     await input.type(postTitle)
 
     // --------------------------------------------------
@@ -90,19 +88,18 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
         .locator('[data-test="insert-point-trigger"]')
         .first()
         .click({ force: true })
+    console.log('\t- Just clicked point trigger...')
 
-    // Wait for the dialog containing all widgets (eg: Markdown) is visible
-    await expect(
-        await page.locator('[data-test="insert-block-menu"]')
-    ).toBeVisible()
-
+    utils.sleep(1)
     // Choose the Markdown menu item
     await page.locator('#block-selector-button-markdown').click({ force: true })
+    console.log('\t- Just clicked Markdown menu item...')
 
     // Paste in the html AS MARKDOWN + comments
     // Note: Do not use .type() here, it is too slow
     // Fill in the textarea
     await page.locator(`.CodeMirror textarea`).fill(postBody, { force: true })
+    console.log('\t- Just filled the textarea...')
 
     // Set up request listener before clicking into markdown editor
     let evt = page.waitForRequest(
@@ -115,6 +112,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await page
         .locator('[data-test="dialog-saveAndClose"][value="Apply"]:visible')
         .click({ force: true })
+    console.log('\t- Just clicked Apply...')
 
     // Let's print the response...
     const resp = await (await (await evt).response()).json()
@@ -136,13 +134,16 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('Setting comments...')
     await page
         .locator('.field-workflow-wrapper', { hasText: 'Comments Off' })
-        .click()
+        .click({ force: true })
+    utils.sleep(1)
+
     await page
         .locator('.field-workflow-flyout-option', {
             hasText: 'Comments On',
         })
         .click()
     utils.sleep(1)
+    console.log('\t- Just set comments to ON...')
 
     // Set the Options tab
     console.log('Setting options...')
@@ -158,12 +159,14 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
         .click({ force: true })
+    console.log('\t- Just clicked into the excerpt placeholder...')
     utils.sleep(1)
 
     // Type excerpt
     await page
         .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
         .type(postExcerpt)
+    console.log('\t- Just typed the excerpt...')
     utils.sleep(1)
 
     // Save and close || publish

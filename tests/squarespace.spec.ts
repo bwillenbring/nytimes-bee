@@ -20,7 +20,7 @@ const password = process.env.SS_PASSWORD
 
 // test.use({})
 
-test.only('basic test 00', async ({ page }, testInfo) => {
+test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     const postTitle = utils.getPostTitle()
     const clues = await utils.getCluesAsJson(page)
     const postBody = await utils.getPostBody(clues)

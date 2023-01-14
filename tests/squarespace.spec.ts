@@ -20,7 +20,7 @@ const password = process.env.SS_PASSWORD
 
 // test.use({})
 
-test('basic test 00', async ({ page }, testInfo) => {
+test.only('basic test 00', async ({ page }, testInfo) => {
     const postTitle = utils.getPostTitle()
     const clues = await utils.getCluesAsJson(page)
     const postBody = await utils.getPostBody(clues)
@@ -35,11 +35,11 @@ test('basic test 00', async ({ page }, testInfo) => {
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
 
-    console.log('✅ Writing files to ./cypress/fixtures/')
-    const filePath1 = utils.fixPath('../cypress/fixtures/clues.html')
+    console.log('✅ Writing files to cypress/fixtures/')
+    const filePath1 = 'cypress/fixtures/clues.html'
     utils.write(postBody, filePath1)
 
-    const filePath2 = utils.fixPath('../cypress/fixtures/clues.json')
+    const filePath2 = 'cypress/fixtures/clues.json'
     utils.write(JSON.stringify(clues, undefined, 2), filePath2)
 
     // Go to the login page

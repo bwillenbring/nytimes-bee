@@ -90,23 +90,31 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
         .locator('[data-test="insert-point-trigger"]')
         .first()
         .click({ force: true })
+
+    // Wait for the dialog containing all widgets (eg: Markdown) is visible
+    await expect(
+        await page.locator('[data-test="insert-block-menu"]')
+    ).toBeVisible()
+
     // Choose the Markdown menu item
-    await page.locator('#block-selector-button-markdown').click()
-    utils.sleep(3)
+    await page.locator('#block-selector-button-markdown').click({ force: true })
 
     // Paste in the html AS MARKDOWN + comments
     // Note: Do not use .type() here, it is too slow
-    await page.locator('.CodeMirror textarea').fill(postBody)
+    // Fill in the textarea
+    await page.locator(`.CodeMirror textarea`).fill(postBody, { force: true })
 
+    // Set up request listener before clicking into markdown editor
     let evt = page.waitForRequest(
         'https://home-office-employee.squarespace.com/api/events/RecordEvent'
     )
+    utils.sleep(1)
 
     // Click Apply changes
     console.log('Applying changes...')
     await page
-        .locator('[data-test="dialog-saveAndClose"][value="Apply"]')
-        .click()
+        .locator('[data-test="dialog-saveAndClose"][value="Apply"]:visible')
+        .click({ force: true })
 
     // Let's print the response...
     const resp = await (await (await evt).response()).json()

@@ -352,22 +352,22 @@ const selectLeftNavItem = async (page: Page, leftNavTitle: string) => {
     const selector = `.App-sidebar section[data-test="navlist-not_linked"] [title="${leftNavTitle}"]`
 
     // 2. Scroll to it
-    await page.locator(selector).scrollIntoViewIfNeeded()
+    // await page.locator(selector).scrollIntoViewIfNeeded()
 
-    // 3. et up a request listener
+    // 3. Set up a request listener
     const xhr = page.waitForRequest(
         'https://home-office-employee.squarespace.com/api/popup-overlay/**'
     )
 
     // 4. Click it
-    await page.click(selector)
+    await page.locator(selector).click({ force: true })
 
     // 5. ☝🏽 triggers page nav (which doesn't always change the url)
     // We'll wait for the xhr request's response, then print it
     const resp = await (await (await xhr).response()).json()
     console.log(`Response after navigating to ${leftNavTitle}...`)
     console.log(`{ shouldDisplaOnPage: ${resp.shouldDisplayOnPage} }`)
-    // utils.sleep(1)
+    utils.sleep(1)
 }
 
 const sleep = (duration: number = 1) => shell.exec(`sleep ${duration}`)

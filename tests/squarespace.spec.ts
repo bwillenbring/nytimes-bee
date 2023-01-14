@@ -1,4 +1,4 @@
-const { test, expect } = require('@playwright/test')
+const { test, expect, Page } = require('@playwright/test')
 const shell = require('shelljs')
 const dayjs = require('dayjs')
 const fs = require('fs')
@@ -17,6 +17,10 @@ import { utils } from '../helpers'
 // From env vars
 const email = process.env.SQ_EMAIL
 const password = process.env.SS_PASSWORD
+const squarespaceCredentials = {
+    email: email,
+    password: password,
+}
 
 // test.use({})
 
@@ -47,41 +51,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
         console.log(err.message)
     }
 
-    // Go to the login page
-    await page.goto('https://home-office-employee.squarespace.com/config/pages')
+    // Login
+    await utils.loginToSquarespace(page, squarespaceCredentials)
 
-    // Enter credentials
-    await page.fill('[type="email"]', email)
-    await page.fill('[type="password"]', password)
-
-    // TODO: Remove when things stabilize
-    await testInfo.attach('Squarespace Login', {
-        body: await page.screenshot({ fullPage: true }),
-        contentType: 'image/png',
-    })
-
-    console.log('logging into Squarespace...')
-
-    // Click Login
-    await Promise.all([
-        page.click('[data-test="login-button"]'),
-        page.waitForNavigation(),
-    ])
-
-    utils.sleep(1)
-
-    console.log('Navigating to NYTimes 🐝 Clues...')
-    // Navigate to Leftnav => NYTimes 🐝 Clues (very low on the leftnav of links)
-    const leftNavTitle = `NYTimes 🐝 Clues`
-    await page.click(
-        `.App-sidebar section[data-test="navlist-not_linked"] [title="${leftNavTitle}"]`
-    )
-
-    // Ensure the page navigation is done
-    await page.waitForNavigation({
-        url: /config\/pages\//,
-    })
-    utils.sleep(1)
+    // Navigate to NYTimes 🐝 Clues
+    await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')
 
     // Make sure + btn is visble, then click it
     console.log('Adding blog post now...')
@@ -135,11 +109,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
             hasText: 'Comments On',
         })
         .click()
-    // sleep(1)
 
     // Set the Options tab
     await page.locator('[data-tab]', { hasText: 'Options' }).click()
-    // sleep(1)
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')

@@ -26,6 +26,12 @@ type Clues = {
     yesterday?: Answers
 }
 
+type LoginCredentials = {
+    email?: string
+    username?: string
+    password: string
+}
+
 // URLs & Keys for Thesaurus & Dictionary endpoints
 const urlT = process.env.API_URL_T || ''
 const urlD = process.env.API_URL_D || ''
@@ -303,6 +309,30 @@ const getPostExcerpt = async (gameData) => {
     return excerpt.join('\n')
 }
 
+const loginToSquarespace = async (
+    page: Page,
+    credentials: LoginCredentials
+) => {
+    // Go to the login page
+    await page.goto('https://home-office-employee.squarespace.com/config/pages')
+
+    // Enter credentials
+    await page.fill('[type="email"]', credentials.email)
+    await page.fill('[type="password"]', credentials.password)
+
+    console.log('logging into Squarespace...')
+
+    // Click Login
+    const settings = page.waitForRequest(
+        'https://home-office-employee.squarespace.com/api/**'
+    )
+    await page.click('[data-test="login-button"]')
+    const resp = await (await settings).response()
+    console.log('settings...')
+    console.log(await resp.json())
+    utils.sleep(1)
+}
+
 const read = (file_path: string, json = true) => {
     // Ensure the file exists
     if (!fileExists(file_path)) {
@@ -314,6 +344,32 @@ const read = (file_path: string, json = true) => {
         ? JSON.parse(fs.readFileSync(file_path))
         : fs.readFileSync(file_path, { encoding: 'utf8' })
 }
+
+const selectLeftNavItem = async (page: Page, leftNavTitle: string) => {
+    console.log(`Navigating to ${leftNavTitle}...`)
+
+    // 1. Form the selector we will click on in the leftnav
+    const selector = `.App-sidebar section[data-test="navlist-not_linked"] [title="${leftNavTitle}"]`
+
+    // 2. Scroll to it
+    await page.locator(selector).scrollIntoViewIfNeeded()
+
+    // 3. et up a request listener
+    const xhr = page.waitForRequest(
+        'https://home-office-employee.squarespace.com/api/popup-overlay/**'
+    )
+
+    // 4. Click it
+    await page.click(selector)
+
+    // 5. ☝🏽 triggers page nav (which doesn't always change the url)
+    // We'll wait for the xhr request's response, then print it
+    const resp = await (await (await xhr).response()).json()
+    console.log(`Response after navigating to ${leftNavTitle}...`)
+    console.log(`{ shouldDisplaOnPage: ${resp.shouldDisplayOnPage} }`)
+    // utils.sleep(1)
+}
+
 const sleep = (duration: number = 1) => shell.exec(`sleep ${duration}`)
 
 const write = (
@@ -332,7 +388,9 @@ const utils = {
     getPostExcerpt,
     getPostTitle,
     getSynonyms,
+    loginToSquarespace,
     read,
+    selectLeftNavItem,
     sleep,
     write,
 }

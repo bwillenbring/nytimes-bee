@@ -45,7 +45,8 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
 
-    console.log('✅ DO NOT write files')
+    console.log('✅ Write file test')
+    utils.write('sample', './000.txt', false)
     // TODO: FIX ME
     // const filePath1 = 'clues.html'
     // const filePath2 = filePath1.replace('.html', '.json')
@@ -139,13 +140,16 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('Setting options...')
     // await page.locator('[data-tab]', { hasText: 'Options' }).click()
     await page.locator('[data-tab]:text("Options")').click()
+    utils.sleep(1)
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')
+    // await page
+    //     .locator('[data-testvalue="excerpt"] p.rte-placeholder')
+    //     .scrollIntoViewIfNeeded()
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-        .scrollIntoViewIfNeeded()
-    await page.locator('[data-testvalue="excerpt"] p.rte-placeholder').click()
+        .click({ force: true })
     utils.sleep(1)
 
     // Type excerpt

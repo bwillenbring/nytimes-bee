@@ -39,17 +39,17 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
 
-    console.log('✅ Trying to write files to cypress/fixtures/')
-    const filePath1 = 'clues.html'
-    const filePath2 = filePath1.replace('.html', '.json')
+    console.log('✅ DO NOT write files')
+    // const filePath1 = 'clues.html'
+    // const filePath2 = filePath1.replace('.html', '.json')
 
-    try {
-        utils.write(postBody, filePath1)
-        utils.write(JSON.stringify(clues, undefined, 2), filePath2)
-    } catch (err: any) {
-        console.log('Could not write files')
-        console.log(err.message)
-    }
+    // try {
+    //     utils.write(postBody, filePath1)
+    //     utils.write(JSON.stringify(clues, undefined, 2), filePath2)
+    // } catch (err: any) {
+    //     console.log('Could not write files')
+    //     console.log(err.message)
+    // }
 
     // Login
     await utils.loginToSquarespace(page, squarespaceCredentials)
@@ -111,6 +111,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
         .click()
 
     // Set the Options tab
+    console.log('Setting options...')
     await page.locator('[data-tab]', { hasText: 'Options' }).click()
 
     // Scroll down to excerpt

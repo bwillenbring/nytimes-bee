@@ -127,9 +127,9 @@ test('basic test 00', async ({ page }, testInfo) => {
 
     // Save and close || publish
     // To save a draft: '[data-test="dialog-saveAndClose"]'
-    await page.locator('[data-test="dialog-saveAndClose"]').click()
-    // await page
-    //     .locator('[data-test="dialog-saveAndPublish"]')
-    //     .click({ force: true })
+    // await page.locator('[data-test="dialog-saveAndClose"]').click()
+    await page
+        .locator('[data-test="dialog-saveAndPublish"]')
+        .click({ force: true })
     utils.sleep(1)
 })

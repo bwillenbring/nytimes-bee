@@ -59,6 +59,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await utils.loginToSquarespace(page, squarespaceCredentials)
     console.log(`\t- Logged in, waiting to navigate to 🐝 Clues...`)
     utils.sleep(2)
+    page.waitForNavigation({
+        url: /config\/pages\//,
+    })
 
     // Navigate to NYTimes 🐝 Clues
     // await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')

@@ -45,21 +45,17 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
 
-    console.log('✅ Write file test')
-    utils.write('sample', './000.txt', false)
+    console.log('✅ Write files')
+    // utils.write('sample', './000.txt', false) // Works
     // TODO: FIX ME
-    // const filePath1 = 'clues.html'
-    // const filePath2 = filePath1.replace('.html', '.json')
-
-    // try {
-    //     utils.write(postBody, filePath1)
-    //     utils.write(JSON.stringify(clues, undefined, 2), filePath2)
-    // } catch (err: any) {
-    //     console.log('Could not write files')
-    //     console.log(err.message)
-    // }
+    const filePath1 = './cypress/fixtures/clues.html'
+    const filePath2 = filePath1.replace('.html', '.json')
+    utils.write(postBody, filePath1, false)
+    utils.write(clues, filePath2, true)
+    console.log(`\t- Wrote 2 files to ./cypress/fixtures...`)
 
     // Login
+    console.log(`Logging in...`)
     await utils.loginToSquarespace(page, squarespaceCredentials)
 
     // Navigate to NYTimes 🐝 Clues
@@ -67,6 +63,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     const blogURL =
         'https://home-office-employee.squarespace.com/config/pages/62e1297259707700d7654d86'
     await page.goto(blogURL)
+    console.log(`\t- In the blog section...`)
     utils.sleep(1)
 
     // Make sure + btn is visble, then click it
@@ -167,9 +164,12 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     utils.sleep(1)
 
     // Type excerpt
+    // await page
+    //     .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
+    //     .type(postExcerpt)
     await page
         .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
-        .type(postExcerpt)
+        .fill(postExcerpt, { force: true })
     console.log('\t- Just typed the excerpt...')
     utils.sleep(1)
 

@@ -63,7 +63,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await utils.loginToSquarespace(page, squarespaceCredentials)
 
     // Navigate to NYTimes 🐝 Clues
-    await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')
+    // await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')
+    const blogURL =
+        'https://home-office-employee.squarespace.com/config/pages/62e1297259707700d7654d86'
+    await page.goto(blogURL)
+    utils.sleep(1)
 
     // Make sure + btn is visble, then click it
     console.log('Adding blog post now...')

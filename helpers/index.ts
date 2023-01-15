@@ -377,7 +377,6 @@ const loginToSquarespace = async (
  */
 const persistStorageState = async (page: Page) => {
     const f = await getStorageStateFile()
-    console.log(f)
     // Persist the storage state
     await page.context().storageState({ path: f })
     // But now you have to overwrite

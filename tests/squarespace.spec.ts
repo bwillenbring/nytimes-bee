@@ -213,14 +213,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // )
 
     // To save a draft: '[data-test="dialog-saveAndClose"]'
-    await page.locator('[data-test="dialog-saveAndClose"]').click()
-    // await page
-    //     .locator('[data-test="dialog-saveAndPublish"]')
-    //     .click({ force: true })
+    // await page.locator('[data-test="dialog-saveAndClose"]').click()
+    await page
+        .locator('[data-test="dialog-saveAndPublish"]')
+        .click({ force: true })
 
-    // const respFinal = await (await (await evtFinal).response()).json()
-    // console.log(respFinal)
-    // utils.sleep(5)
     console.log('❤️ almost done...')
     utils.sleep(3)
     console.log('❤️ done...')

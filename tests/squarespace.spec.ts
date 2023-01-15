@@ -59,15 +59,14 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await utils.loginToSquarespace(page, squarespaceCredentials)
     console.log(`\t- Logged in, waiting to navigate to 🐝 Clues...`)
     utils.sleep(2)
-    page.waitForNavigation({
-        url: /config\/pages\//,
-    })
 
     // Navigate to NYTimes 🐝 Clues
     // await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')
     const blogURL =
         'https://home-office-employee.squarespace.com/config/pages/62e1297259707700d7654d86'
-    await page.goto(blogURL)
+    await page.goto(blogURL, {
+        waitUntil: 'domcontentloaded',
+    })
     console.log(`\t- In the blog section...`)
     utils.sleep(1)
 

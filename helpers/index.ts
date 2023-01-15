@@ -1,4 +1,4 @@
-import { Page, request, APIRequestContext } from '@playwright/test'
+import { Page, request, APIRequestContext, expect } from '@playwright/test'
 
 const shell = require('shelljs')
 const dayjs = require('dayjs')
@@ -321,15 +321,12 @@ const loginToSquarespace = async (
     await page.fill('[type="password"]', credentials.password)
 
     console.log('logging into Squarespace...')
-
-    // Click Login
-    const settings = page.waitForRequest(
-        'https://home-office-employee.squarespace.com/api/**'
-    )
     await page.click('[data-test="login-button"]')
-    const resp = await (await settings).response()
-    console.log('settings...')
-    console.log(await resp.json())
+    // Make ui assertion
+    await expect(
+        await page.locator('[data-test="appshell-container"]')
+    ).toBeVisible()
+    console.log(`URL is now ${page.url()}`)
     utils.sleep(1)
 }
 

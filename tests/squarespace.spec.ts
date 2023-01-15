@@ -1,4 +1,10 @@
-const { test, expect, Page } = require('@playwright/test')
+const {
+    request,
+    test,
+    expect,
+    Page,
+    APIRequestContext,
+} = require('@playwright/test')
 const shell = require('shelljs')
 const dayjs = require('dayjs')
 const fs = require('fs')
@@ -24,7 +30,18 @@ const squarespaceCredentials = {
 
 // test.use({})
 
+test.beforeAll(async () => {
+    const defaultState = {
+        cookies: [],
+        origins: [],
+    }
+    utils.write(defaultState, utils.getStorageStateFile(), true)
+})
+
 test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
+    // Because networking on github runners is 💩
+    test.slow()
+
     const postTitle = utils.getPostTitle()
     const clues = await utils.getCluesAsJson(page)
     const postBody = await utils.getPostBody(clues)
@@ -71,9 +88,16 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     utils.sleep(1)
 
     // Make sure + btn is visble, then click it
-    console.log('Adding blog post now...')
-    let plus_btn = await page.locator('[data-test="blog-add-item"]')
+    console.log('Trying to add blog post now...')
+    let plus_btn = await page.locator('[data-test="blog-add-item"]:visible')
+    await expect(plus_btn).toBeVisible()
+    console.log('The + btn became visible... clicking it now...')
+    const newPost = page.waitForRequest(`**/text-posts**`)
     await plus_btn.click({ force: true })
+    console.log(
+        `☠️ Wait for the text-posts xhr to return — could take a while!`
+    )
+    const r = await newPost
 
     // Make sure the blog post form is visible
     await expect(await page.locator('.squarespace-managed-ui')).toBeVisible()

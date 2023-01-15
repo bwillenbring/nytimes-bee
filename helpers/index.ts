@@ -1,4 +1,5 @@
 import { Page, request, APIRequestContext, expect } from '@playwright/test'
+import { stat } from 'fs'
 
 const shell = require('shelljs')
 const dayjs = require('dayjs')
@@ -6,6 +7,7 @@ const fs = require('fs')
 const path = require('path')
 const rita = require('rita')
 import { flatten } from 'lodash'
+const config = require('../playwright.config')
 
 // Types
 type Answers = {
@@ -38,9 +40,37 @@ const urlD = process.env.API_URL_D || ''
 const keyT = process.env.API_KEY_T || ''
 const keyD = process.env.API_KEY_D || ''
 
+/**
+ * Gets an api request context, and sets its storage state file to the same as the one used in playwright.config.ts
+ * @returns {APIRequestContext}
+ */
 const getApiRequestObj = async () => {
-    const req: APIRequestContext = await request.newContext()
+    const f = await getStorageStateFile()
+    console.log(f)
+    const req: APIRequestContext = await request.newContext({
+        storageState: f,
+    })
     return req
+}
+
+/**
+ * Does two things:
+ *   1. Consults the configured storage state file
+ *   2. If it doesn't exist, it creates an empty one {}
+ * @returns {string}
+ */
+const getStorageStateFile = () => {
+    const f = config.use.storageState
+    const file_path = path.join(__dirname, `../${f}`)
+    if (!fileExists(file_path)) {
+        // create it
+        const emptyStorage = {
+            cookies: [],
+            origins: [],
+        }
+        // write(emptyStorage, file_path, true);
+    }
+    return file_path
 }
 
 const getSynonyms = async (word) => {
@@ -313,8 +343,17 @@ const loginToSquarespace = async (
     page: Page,
     credentials: LoginCredentials
 ) => {
+    // First, read the storageState file
+    const f = getStorageStateFile()
+    console.log(`File exists... ${fileExists(f)}\n${f}`)
+    const state = read(f, true)
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
+    if (state.cookies.length > 0) {
+        // already logged in
+        console.log('\t-❤️ Already logged in!!')
+        return
+    }
 
     // Enter credentials
     await page.fill('[type="email"]', credentials.email)
@@ -327,7 +366,23 @@ const loginToSquarespace = async (
         await page.locator('[data-test="appshell-container"]')
     ).toBeVisible()
     console.log(`URL is now ${page.url()}`)
+    await persistStorageState(page)
     utils.sleep(1)
+}
+
+/**
+ * Does
+ * @param page {Page} the page object
+ * @returns
+ */
+const persistStorageState = async (page: Page) => {
+    const f = await getStorageStateFile()
+    console.log(f)
+    // Persist the storage state
+    await page.context().storageState({ path: f })
+    // But now you have to overwrite
+    console.log('persisting storage state...')
+    return
 }
 
 const read = (file_path: string, json = true) => {
@@ -380,10 +435,12 @@ const write = (
 
 const utils = {
     fixPath,
+    getApiRequestObj,
     getCluesAsJson,
     getPostBody,
     getPostExcerpt,
     getPostTitle,
+    getStorageStateFile,
     getSynonyms,
     loginToSquarespace,
     read,

@@ -46,6 +46,7 @@ const config = {
         trace: 'on-first-retry',
         video: 'on',
         viewport: { width: 1600, height: 800 },
+        storageState: 'storageState.json',
     },
 
     /* Configure projects for major browsers */

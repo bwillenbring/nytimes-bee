@@ -157,11 +157,18 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     await page.locator('[data-tab]:text("Options")').click()
     utils.sleep(1)
 
+    // Wait for this selector to be visible
+    console.log(`\t- Checking for visibility of options input...`)
+    await expect(
+        await page.locator('[data-test="text"][name="urlId"]:visible')
+    ).toBeVisible()
+    console.log(`\t- Configurable options are visible...`)
+
     // Scroll down to excerpt
     console.log('Setting excerpt...')
-    // await page
-    //     .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-    //     .scrollIntoViewIfNeeded()
+    await page
+        .locator('[data-testvalue="excerpt"] p.rte-placeholder')
+        .scrollIntoViewIfNeeded()
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
         .click({ force: true })
@@ -180,9 +187,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Save and close || publish
     console.log('Saving...')
-    const evtFinal = page.waitForRequest(
-        'https://home-office-employee.squarespace.com/api/events/RecordEvent'
-    )
+    // const evtFinal = page.waitForRequest(
+    //     'https://home-office-employee.squarespace.com/api/events/RecordEvent'
+    // )
 
     // To save a draft: '[data-test="dialog-saveAndClose"]'
     await page.locator('[data-test="dialog-saveAndClose"]').click()
@@ -190,8 +197,10 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     //     .locator('[data-test="dialog-saveAndPublish"]')
     //     .click({ force: true })
 
-    const respFinal = await (await (await evtFinal).response()).json()
-    console.log(respFinal)
+    // const respFinal = await (await (await evtFinal).response()).json()
+    // console.log(respFinal)
     // utils.sleep(5)
-    console.log('❤️	done')
+    console.log('❤️ almost done...')
+    utils.sleep(3)
+    console.log('❤️ done...')
 })

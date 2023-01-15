@@ -73,32 +73,30 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // Make sure + btn is visble, then click it
     console.log('Adding blog post now...')
     let plus_btn = await page.locator('[data-test="blog-add-item"]')
-    // await expect(plus_btn).toBeVisible()
     await plus_btn.click({ force: true })
 
     // Make sure the blog post form is visible
-    let form = await page.locator('.squarespace-managed-ui')
-    // await expect(form).toBeVisible()
+    await expect(await page.locator('.squarespace-managed-ui')).toBeVisible()
 
     // Enter a title into [data-test="text"]
     console.log('Setting title...')
-    let input = await form.locator('input[data-test="text"]:visible')
-    await input.type(postTitle)
+    await page
+        .locator('.squarespace-managed-ui input[data-test="text"]:visible')
+        .type(postTitle)
+    utils.sleep(1)
 
     // --------------------------------------------------
     // Insert a block of Markdown at the top point
     console.log('Adding html as markdown...')
-
-    await page
-        .locator('[data-test="insert-point-trigger"]')
-        .first()
-        .click({ force: true })
+    const mdSel = '[data-test="insert-point-trigger"]'
+    await page.locator(mdSel).first().click({ force: true })
     console.log('\t- Just clicked point trigger...')
-
     utils.sleep(1)
+
     // Choose the Markdown menu item
     await page.locator('#block-selector-button-markdown').click({ force: true })
     console.log('\t- Just clicked Markdown menu item...')
+    utils.sleep(1)
 
     // Paste in the html AS MARKDOWN + comments
     // Note: Do not use .type() here, it is too slow

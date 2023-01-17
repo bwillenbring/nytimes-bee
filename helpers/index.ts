@@ -73,7 +73,34 @@ const getStorageStateFile = () => {
     return file_path
 }
 
-const getSynonyms = async (word) => {
+const getSynonyms = async (word: string) => {
+    // Reject
+    if (word.length < 4) {
+        throw new Error('word must be 4 or more characters long.')
+    }
+    // First, attempt to match the word against a known definition
+    const dictFile = './local_dictionary/words.json'
+    const dictionary = read(dictFile, true).words
+    const match = dictionary.find(
+        (item) => item.word.toLowerCase() === word.toLowerCase() && item.clue
+    )
+    if (match) {
+        return {
+            defs: [match.clue],
+            syns: [],
+        }
+    } else {
+        // Consult the Merriam Webster API
+        return await getAPISynonyms(word)
+    }
+}
+
+/**
+ *
+ * @param word {string}
+ * @returns
+ */
+const getAPISynonyms = async (word) => {
     // Always consult the thesaurus first
     let url = `${urlT}/${word}?key=${keyT}`
 
@@ -89,7 +116,7 @@ const getSynonyms = async (word) => {
         .map((entries) => flatten(entries.shortdef))
 
     // synonyms
-    const url2 = `${urlD}/${word}?key=${keyD}`
+    // const url2 = `${urlD}/${word}?key=${keyD}`
     // const r2 = await (await req.get(url2)).json()
     const syns = r1
         .filter((item) => item.meta && item.meta.syns)
@@ -148,7 +175,11 @@ const obfuscateDefinition = (def: any, word: string) => {
     return new_defs
 }
 
-// Function that returns a header
+/**
+ * Builds a string of `formatted HTML`. Portions of this html RESEMBLE the {@link getPostExcerpt} function, but don't rely on it. {@link formatHeader} produces similar but different versions of an excerpt.
+ * @param clues {Object}
+ * @returns {string} The fragment of html that appears at the top of each blog post: `<tagline> <typewriter image> <puzzle breakdown>`
+ */
 const formatHeader = (clues: Clues) => {
     // Sort out the letters
     let requiredLetter = clues.today.centerLetter
@@ -224,8 +255,6 @@ const getPostTitle = () => {
 const getPostBody = async (clues) => {
     // First, get the header
     const header = formatHeader(clues)
-
-    // Sort
 
     /** Return clues as a string of html, formatted like this...
      * <h2><code>AB</code></h2>
@@ -303,10 +332,21 @@ const getPostBody = async (clues) => {
 }
 
 const getCluesAsJson = async (page: Page) => {
-    const url = 'https://nytimes.com/puzzles/spelling-bee'
-    await page.goto(url)
-    const gd: Clues = await page.evaluate(`window.gameData`)
-    return gd
+    const clueFile = './fixtures/clues.json'
+    // First see if the file exists locally
+    if (fileExists(clueFile)) {
+        console.log(`\t- ❤️ Clues already exist!`)
+        const gd: Clues = read(clueFile, true)
+        return gd
+    } else {
+        const url = 'https://nytimes.com/puzzles/spelling-bee'
+        await page.goto(url)
+        const gd: Clues = await page.evaluate(`window.gameData`)
+        // Write this
+        console.log(`Now writing clue file to ${clueFile}`)
+        write(gd, clueFile, true)
+        return gd
+    }
 }
 
 const getPostExcerpt = async (gameData) => {
@@ -330,7 +370,7 @@ const getPostExcerpt = async (gameData) => {
     let validLetters = `${cl}  ${ol}`
     // Note: the 2nd and 3rd bullets will automatically be converted when the enter key is used. There's no need for a hypehn
     let excerpt = [
-        `## Letters: ${validLetters}`,
+        `Letters: ${validLetters}`,
         `- Total Answers: ${gd.today.answers.length}`,
         `Pangrams: ${gd.today.pangrams.length}`,
         `Words revealed in these clues: None! 🤣`,
@@ -435,6 +475,7 @@ const write = (
 const utils = {
     fixPath,
     getApiRequestObj,
+    getAPISynonyms,
     getCluesAsJson,
     getPostBody,
     getPostExcerpt,

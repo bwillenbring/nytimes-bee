@@ -1,16 +1,6 @@
-const {
-    request,
-    test,
-    expect,
-    Page,
-    APIRequestContext,
-} = require('@playwright/test')
-const shell = require('shelljs')
-const dayjs = require('dayjs')
-const fs = require('fs')
-const sep = '-'.repeat(75)
-
+import { test, expect } from '@playwright/test'
 import { utils } from '../helpers'
+const sep = '-'.repeat(75)
 
 /**
  *
@@ -21,21 +11,20 @@ import { utils } from '../helpers'
  */
 
 // From env vars
-const email = process.env.SQ_EMAIL
-const password = process.env.SS_PASSWORD
 const squarespaceCredentials = {
-    email: email,
-    password: password,
+    email: process.env.SQ_EMAIL,
+    password: process.env.SS_PASSWORD,
 }
 
-// test.use({})
-
 test.beforeAll(async () => {
-    const defaultState = {
-        cookies: [],
-        origins: [],
+    if (process.env.CI) {
+        console.log('Clearing session state...')
+        const defaultState = {
+            cookies: [],
+            origins: [],
+        }
+        utils.write(defaultState, utils.getStorageStateFile(), true)
     }
-    utils.write(defaultState, utils.getStorageStateFile(), true)
 })
 
 test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
@@ -202,7 +191,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     //     .type(postExcerpt)
     await page
         .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
-        .fill(postExcerpt, { force: true })
+        .type(postExcerpt)
     console.log('\t- Just typed the excerpt...')
     utils.sleep(1)
 

@@ -197,15 +197,14 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Save and close || publish
     console.log('Saving...')
-    // const evtFinal = page.waitForRequest(
-    //     'https://home-office-employee.squarespace.com/api/events/RecordEvent'
-    // )
-
-    // To save a draft: '[data-test="dialog-saveAndClose"]'
-    // await page.locator('[data-test="dialog-saveAndClose"]').click()
-    await page
-        .locator('[data-test="dialog-saveAndPublish"]')
-        .click({ force: true })
+    // By default save a draft only
+    let saveBtnSelector = '[data-test="dialog-saveAndClose"]'
+    if (process.env.CI) {
+        // Save and Publish
+        saveBtnSelector = saveBtnSelector.replace('Close', 'Publish')
+    }
+    // Commit all changes
+    await page.locator(saveBtnSelector).click({ force: true })
 
     console.log('❤️ almost done...')
     utils.sleep(3)

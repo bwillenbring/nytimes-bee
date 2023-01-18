@@ -26,11 +26,6 @@ jobs:
             - name: Install only chromium Playwright Browser
               run: npx playwright install chromium --with-deps
 
-            # Run Cypress
-            # - name: Run Cypress
-            #   run: |
-            #       npx cypress run -s 'cypress/integration/02*' -e 'SQ_EMAIL=${{ secrets.SQ_EMAIL }},SQ_PASSWORD=${{ secrets.SQ_PASSWORD }},API_URL_T=${{ secrets.API_URL_T }},API_URL_D=${{ secrets.API_URL_D }},API_KEY_T=${{ secrets.API_KEY_T }},API_KEY_D=${{ secrets.API_KEY_D }}'
-
             # Run Playwright
             - name: Run Playwright tests
               run: |

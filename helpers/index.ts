@@ -34,6 +34,11 @@ type LoginCredentials = {
     password: string
 }
 
+type DictionaryClue = {
+    word: string
+    clue?: string
+}
+
 // URLs & Keys for Thesaurus & Dictionary endpoints
 const urlT = process.env.API_URL_T || ''
 const urlD = process.env.API_URL_D || ''
@@ -78,9 +83,8 @@ const getSynonyms = async (word: string) => {
     if (word.length < 4) {
         throw new Error('word must be 4 or more characters long.')
     }
-    // First, attempt to match the word against a known definition
-    const dictFile = './local_dictionary/words.json'
-    const dictionary = read(dictFile, true).words
+    // First, load all words with definitions / clues
+    const dictionary = getWordsWithClues()
     const match = dictionary.find(
         (item) => item.word.toLowerCase() === word.toLowerCase() && item.clue
     )
@@ -92,6 +96,36 @@ const getSynonyms = async (word: string) => {
     } else {
         // Consult the Merriam Webster API
         return await getAPISynonyms(word)
+    }
+}
+
+const getWordsInDictionary = (): DictionaryClue[] => {
+    const dictFile = './local_dictionary/words.json'
+    try {
+        let words = read(dictFile, true).words
+        words = words.filter((word) => word.word && word.word.length >= 4)
+        return words
+    } catch (err) {
+        return []
+    }
+}
+
+/**
+ * Reads in a local dictionary file and returns an array of type DictionaryClue where each  item in the array has a non-null word and clue with this structure:
+ * - `word`
+ * - `clue`
+ * @returns {Array}
+ */
+const getWordsWithClues = (): DictionaryClue[] => {
+    // get all words
+    const allWords = getWordsInDictionary()
+    try {
+        const words = allWords.filter(
+            (word) => word.clue && word.clue.length > 4
+        )
+        return words
+    } catch (err) {
+        return []
     }
 }
 
@@ -482,6 +516,8 @@ const utils = {
     getPostTitle,
     getStorageStateFile,
     getSynonyms,
+    getWordsInDictionary,
+    getWordsWithClues,
     loginToSquarespace,
     read,
     selectLeftNavItem,

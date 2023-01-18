@@ -121,3 +121,8 @@ dist
 /test-results/
 /playwright-report/
 /playwright/.cache/
+
+# Playwright-specific
+storageState.json
+test-results* 
+fixtures/*.json

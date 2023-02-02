@@ -24,6 +24,12 @@ test.beforeAll(async () => {
             origins: [],
         }
         utils.write(defaultState, utils.getStorageStateFile(), true)
+
+        // Print build info
+        console.log(`Branch: ${process.env.GITHUB_REF_NAME}`)
+        console.log(`Actor: ${process.env.GITHUB_ACTOR}`)
+        console.log(`Run Attempt: ${process.env.GITHUB_RUN_ATTEMPT}`)
+        console.log(`Run ID: ${process.env.GITHUB_RUN_ID}`)
     }
 })
 

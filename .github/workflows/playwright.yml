@@ -29,8 +29,8 @@ jobs:
             # Run Playwright
             - name: Run Playwright tests
               run: |
+                  echo ${{ GITHUB}}
                   echo Making fixtures dir
-                  mkdir cypress/fixtures
                   mkdir fixtures
                   ls cypress
                   SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' npx playwright test squarespace
@@ -52,4 +52,4 @@ jobs:
                   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
                   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
                   AWS_REGION: ${{ secrets.AWS_REGION }}
-                  SOURCE_DIR: 'cypress/fixtures'
+                  SOURCE_DIR: 'fixtures'

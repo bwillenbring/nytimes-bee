@@ -45,8 +45,8 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ postTitle:\n${postTitle}`)
     console.log(sep)
 
-    console.log(`✅ postBody:\n${postBody}`)
-    console.log(sep)
+    // console.log(`✅ postBody:\n${postBody}`)
+    // console.log(sep)
 
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
@@ -54,11 +54,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('✅ Write files')
     // utils.write('sample', './000.txt', false) // Works
     // TODO: FIX ME
-    const filePath1 = './cypress/fixtures/clues.html'
+    const filePath1 = './fixtures/clues.html'
     const filePath2 = filePath1.replace('.html', '.json')
     utils.write(postBody, filePath1, false)
     utils.write(clues, filePath2, true)
-    console.log(`\t- Wrote 2 files to ./cypress/fixtures...`)
+    console.log(`\t- Wrote 2 files to ./fixtures...`)
 
     // Login
     console.log(`Logging in...`)

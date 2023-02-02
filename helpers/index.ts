@@ -268,7 +268,11 @@ const getGroupings = (words: string[]) => {
 }
 
 const fileExists = (file_path: string) => {
-    return fs.existsSync(file_path)
+    try {
+        return fs.existsSync(file_path)
+    } catch (err) {
+        return false
+    }
 }
 
 const login = (username: string, password: string) => {
@@ -419,7 +423,7 @@ const loginToSquarespace = async (
 ) => {
     // First, read the storageState file
     const f = getStorageStateFile()
-    console.log(`File exists... ${fileExists(f)}\n${f}`)
+    console.log(`Storage state file — ${f} exists... ${fileExists(f)}\n${f}`)
     const state = read(f, true)
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
@@ -428,6 +432,8 @@ const loginToSquarespace = async (
         console.log('\t-❤️ Already logged in!!')
         return
     }
+
+    sleep(1)
 
     // Enter credentials
     await page.fill('[type="email"]', credentials.email)

@@ -182,9 +182,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')
-    await page
-        .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-        .scrollIntoViewIfNeeded()
+    // NOTE: This scrollIntoViewIfneeded() is very problematic because of...
+    // locator.scrollIntoViewIfNeeded: Element is not attached to the DOM
+    // await page
+    //     .locator('[data-testvalue="excerpt"] p.rte-placeholder')
+    //     .scrollIntoViewIfNeeded()
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
         .click({ force: true })
@@ -205,7 +207,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('Saving...')
     // By default save a draft only
     let saveBtnSelector = '[data-test="dialog-saveAndClose"]'
-    if (process.env.CI) {
+    const branch = process.env.GITHUB_REF_NAME || ''
+    // Only publish if the branch is main
+    if (process.env.CI && branch === 'main') {
         // Save and Publish
         saveBtnSelector = saveBtnSelector.replace('Close', 'Publish')
     }

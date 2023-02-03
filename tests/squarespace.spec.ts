@@ -24,6 +24,12 @@ test.beforeAll(async () => {
             origins: [],
         }
         utils.write(defaultState, utils.getStorageStateFile(), true)
+
+        // Print build info
+        console.log(`Branch: ${process.env.GITHUB_REF_NAME}`)
+        console.log(`Actor: ${process.env.GITHUB_ACTOR}`)
+        console.log(`Run Attempt: ${process.env.GITHUB_RUN_ATTEMPT}`)
+        console.log(`Run ID: ${process.env.GITHUB_RUN_ID}`)
     }
 })
 
@@ -45,8 +51,8 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log(`✅ postTitle:\n${postTitle}`)
     console.log(sep)
 
-    console.log(`✅ postBody:\n${postBody}`)
-    console.log(sep)
+    // console.log(`✅ postBody:\n${postBody}`)
+    // console.log(sep)
 
     console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
     console.log(sep)
@@ -54,11 +60,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('✅ Write files')
     // utils.write('sample', './000.txt', false) // Works
     // TODO: FIX ME
-    const filePath1 = './cypress/fixtures/clues.html'
+    const filePath1 = './fixtures/clues.html'
     const filePath2 = filePath1.replace('.html', '.json')
     utils.write(postBody, filePath1, false)
     utils.write(clues, filePath2, true)
-    console.log(`\t- Wrote 2 files to ./cypress/fixtures...`)
+    console.log(`\t- Wrote 2 files to ./fixtures...`)
 
     // Login
     console.log(`Logging in...`)
@@ -176,9 +182,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')
-    await page
-        .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-        .scrollIntoViewIfNeeded()
+    // NOTE: This scrollIntoViewIfneeded() is very problematic because of...
+    // locator.scrollIntoViewIfNeeded: Element is not attached to the DOM
+    // await page
+    //     .locator('[data-testvalue="excerpt"] p.rte-placeholder')
+    //     .scrollIntoViewIfNeeded()
     await page
         .locator('[data-testvalue="excerpt"] p.rte-placeholder')
         .click({ force: true })
@@ -199,7 +207,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('Saving...')
     // By default save a draft only
     let saveBtnSelector = '[data-test="dialog-saveAndClose"]'
-    if (process.env.CI) {
+    const branch = process.env.GITHUB_REF_NAME || ''
+    // Only publish if the branch is main
+    if (process.env.CI && branch === 'main') {
         // Save and Publish
         saveBtnSelector = saveBtnSelector.replace('Close', 'Publish')
     }

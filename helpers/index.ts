@@ -429,24 +429,46 @@ const loginToSquarespace = async (
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
     if (state.cookies.length > 0) {
         // already logged in
-        console.log('\t-❤️ Already logged in!!')
-        return
+        console.log(`\t-❤️ Already logged in!!\n${'-'.repeat(50)}`)
+    } else {
+        console.log('\t-😢 Not logged in...')
+        // Enter credentials
+        await page.fill('[type="email"]', credentials.email)
+        await page.fill('[type="password"]', credentials.password)
+
+        console.log('logging into Squarespace, but awaiting 2 things...')
+        // Set up an xhr
+        const req = page.waitForResponse('**/api/*/login/user**', {
+            timeout: 45000,
+        })
+        // Await 2 things: click to login + the xhr arising from the click
+        const responses = await Promise.all([
+            req,
+            page.click('[data-test="login-button"]', { timeout: 45000 }),
+        ])
+        // Log
+        console.log(
+            '\t-Just clicked login, waiting for xhr to respond w 200...'
+        )
+        // Assert that the xhr responds with 200 status code
+        const r = await responses[0]
+        await expect(await r.status()).toEqual(200)
+        console.log(`\t- 👍🏽 xhr statusCode is 200`)
+        console.log(
+            `\t- Waiting for ui to render [data-test="appshell-container"]`
+        )
     }
 
-    sleep(1)
-
-    // Enter credentials
-    await page.fill('[type="email"]', credentials.email)
-    await page.fill('[type="password"]', credentials.password)
-
-    console.log('logging into Squarespace...')
-    await page.click('[data-test="login-button"]')
-    // Make ui assertion
+    // --------------------------------------------------
+    console.log('👇🏽 One final UI assertion!')
+    // Make ui assertion with generous timeout
     await expect(
         await page.locator('[data-test="appshell-container"]')
-    ).toBeVisible()
-    console.log(`URL is now ${page.url()}`)
+    ).toBeVisible({ timeout: 45000 })
+    console.log(`\t- 👍🏽 URL is now ${page.url()}`)
+    console.log(`\t- Persisting storageState`)
     await persistStorageState(page)
+    console.log(`\t- ✅ Good to go\n${'-'.repeat(50)}`)
     utils.sleep(1)
 }
 
@@ -459,8 +481,6 @@ const persistStorageState = async (page: Page) => {
     const f = await getStorageStateFile()
     // Persist the storage state
     await page.context().storageState({ path: f })
-    // But now you have to overwrite
-    console.log('persisting storage state...')
     return
 }
 

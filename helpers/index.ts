@@ -51,7 +51,6 @@ const keyD = process.env.API_KEY_D || ''
  */
 const getApiRequestObj = async () => {
     const f = await getStorageStateFile()
-    console.log(f)
     const req: APIRequestContext = await request.newContext({
         storageState: f,
     })

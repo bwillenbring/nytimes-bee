@@ -435,6 +435,8 @@ const loginToSquarespace = async (
         await page.locator('[type="email"]').type(credentials.email)
         sleep(1)
         await page.locator('[type="password"]').type(credentials.password)
+        await page.locator('[type="password"]').blur()
+        sleep(1)
 
         console.log('logging into Squarespace, but awaiting 2 things...')
         // Set up an xhr

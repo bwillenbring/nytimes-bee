@@ -38,7 +38,7 @@ jobs:
               with:
                   name: playwright-report
                   path: playwright-report/
-                  retention-days: 1
+                  retention-days: 7
 
             # Transfer files s3 bucket
             - name: Publish new dictionary file to nytimes s3 bucket

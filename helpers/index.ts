@@ -432,8 +432,9 @@ const loginToSquarespace = async (
     } else {
         console.log('\t-😢 Not logged in...')
         // Enter credentials
-        await page.fill('[type="email"]', credentials.email)
-        await page.fill('[type="password"]', credentials.password)
+        await page.locator('[type="email"]').type(credentials.email)
+        sleep(1)
+        await page.locator('[type="password"]').type(credentials.password)
 
         console.log('logging into Squarespace, but awaiting 2 things...')
         // Set up an xhr
@@ -456,6 +457,8 @@ const loginToSquarespace = async (
         console.log(
             `\t- Waiting for ui to render [data-test="appshell-container"]`
         )
+        // Let's assert that the url change occurs
+        await page.waitForURL(/\/config\/pages\/.*/gim)
     }
 
     // --------------------------------------------------

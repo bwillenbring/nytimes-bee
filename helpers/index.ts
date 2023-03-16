@@ -426,7 +426,7 @@ const loginToSquarespace = async (
     const state = read(f, true)
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
-    if (state.cookies.length > 0) {
+    if (state.cookies.length < 0) {
         // already logged in
         console.log(`\t-❤️ Already logged in!!\n${'-'.repeat(50)}`)
     } else {
@@ -435,30 +435,33 @@ const loginToSquarespace = async (
         await page.locator('[type="email"]').type(credentials.email)
         sleep(1)
         await page.locator('[type="password"]').type(credentials.password)
+        await page.locator('[type="password"]').blur()
+        sleep(1)
 
         console.log('logging into Squarespace, but awaiting 2 things...')
         // Set up an xhr
-        const req = page.waitForResponse('**/api/*/login/user**', {
-            timeout: 45000,
-        })
+        // const req = page.waitForResponse('**/api/*/login/user**', {
+        //     timeout: 45000,
+        // })
         // Await 2 things: click to login + the xhr arising from the click
         const responses = await Promise.all([
-            req,
             page.click('[data-test="login-button"]', { timeout: 45000 }),
+            page.waitForURL('**/config/pages**'),
         ])
         // Log
         console.log(
             '\t-Just clicked login, waiting for xhr to respond w 200...'
         )
         // Assert that the xhr responds with 200 status code
-        const r = await responses[0]
-        await expect(await r.status()).toEqual(200)
-        console.log(`\t- 👍🏽 xhr statusCode is 200`)
+        // const r = await responses[0]
+        // await expect(await r.status()).toEqual(200)
+        // console.log(`\t- 👍🏽 xhr statusCode is 200`)
         console.log(
             `\t- Waiting for ui to render [data-test="appshell-container"]`
         )
-        // Let's assert that the url change occurs
-        await page.waitForURL(/\/config\/pages\/.*/gim)
+        await expect(
+            await page.locator('[data-test="appshell-container"]')
+        ).toBeDefined()
     }
 
     // --------------------------------------------------

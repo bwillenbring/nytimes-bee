@@ -16,6 +16,10 @@ const squarespaceCredentials = {
     password: process.env.SS_PASSWORD,
 }
 
+test.use({
+    storageState: {},
+})
+
 test.beforeAll(async () => {
     if (process.env.CI) {
         console.log('Clearing session state...')

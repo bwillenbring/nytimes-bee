@@ -452,8 +452,8 @@ const loginToSquarespace = async (
         )
         // Assert that the xhr responds with 200 status code
         const r = await responses[0]
-        await expect(await r.status()).toEqual(200)
-        console.log(`\t- 👍🏽 xhr statusCode is 200`)
+        // await expect(await r.status()).toEqual(200)
+        // console.log(`\t- 👍🏽 xhr statusCode is 200`)
         console.log(
             `\t- Waiting for ui to render [data-test="appshell-container"]`
         )

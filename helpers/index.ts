@@ -426,7 +426,7 @@ const loginToSquarespace = async (
     const state = read(f, true)
     // Go to the login page
     await page.goto('https://home-office-employee.squarespace.com/config/pages')
-    if (state.cookies.length > 0) {
+    if (state.cookies.length < 0) {
         // already logged in
         console.log(`\t-❤️ Already logged in!!\n${'-'.repeat(50)}`)
     } else {
@@ -444,7 +444,7 @@ const loginToSquarespace = async (
         // Await 2 things: click to login + the xhr arising from the click
         const responses = await Promise.all([
             page.click('[data-test="login-button"]', { timeout: 45000 }),
-            page.waitForURL(/\/config\/pages\/.*/gim),
+            page.waitForURL('**/config/pages**'),
         ])
         // Log
         console.log(
@@ -457,6 +457,9 @@ const loginToSquarespace = async (
         console.log(
             `\t- Waiting for ui to render [data-test="appshell-container"]`
         )
+        await expect(
+            await page.locator('[data-test="appshell-container"]')
+        ).toBeDefined()
     }
 
     // --------------------------------------------------

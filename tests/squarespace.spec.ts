@@ -40,6 +40,8 @@ test.beforeAll(async () => {
 test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // Because networking on github runners is 💩
     test.slow()
+    console.log('Setting default test timeout to 60000 ms')
+    test.setTimeout(60000)
 
     const postTitle = utils.getPostTitle()
     const clues = await utils.getCluesAsJson(page)

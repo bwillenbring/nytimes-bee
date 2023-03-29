@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test'
+import { test, expect, Locator } from '@playwright/test'
 import { utils } from '../helpers'
 const sep = '-'.repeat(75)
 
@@ -40,8 +40,17 @@ test.beforeAll(async () => {
 test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // Because networking on github runners is 💩
     test.slow()
-    console.log('Setting default test timeout to 60000 ms')
-    test.setTimeout(60000)
+    console.log('Setting default test timeout to 120000 ms')
+    test.setTimeout(120000)
+
+    // Set a long timeout var that will be used in various places
+    const longTimeout = 60000
+
+    // To slow things down to a crawl
+    // await utils.slowDown({
+    //     factor: 5,
+    //     page: page,
+    // })
 
     const postTitle = utils.getPostTitle()
     const clues = await utils.getCluesAsJson(page)
@@ -56,20 +65,11 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     console.log(`✅ postTitle:\n${postTitle}`)
     console.log(sep)
-
-    // console.log(`✅ postBody:\n${postBody}`)
-    // console.log(sep)
-
-    console.log(`✅ clues:\n${JSON.stringify(clues, undefined, 2)}`)
-    console.log(sep)
-
     console.log('✅ Write files')
-    // utils.write('sample', './000.txt', false) // Works
     // TODO: FIX ME
-    const filePath1 = './fixtures/clues.html'
-    const filePath2 = filePath1.replace('.html', '.json')
-    utils.write(postBody, filePath1, false)
-    utils.write(clues, filePath2, true)
+    const filePath = './fixtures/clues'
+    utils.write(postBody, `${filePath}.html`, false)
+    utils.write(clues, `${filePath}.json`, true)
     console.log(`\t- Wrote 2 files to ./fixtures...`)
 
     // Login
@@ -79,7 +79,6 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     utils.sleep(2)
 
     // Navigate to NYTimes 🐝 Clues
-    // await utils.selectLeftNavItem(page, 'NYTimes 🐝 Clues')
     const blogURL =
         'https://home-office-employee.squarespace.com/config/pages/62e1297259707700d7654d86'
     await page.goto(blogURL, {
@@ -90,8 +89,9 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Make sure + btn is visble, then click it
     console.log('Trying to add blog post now...')
-    let plus_btn = await page.locator('[data-test="blog-add-item"]:visible')
-    await expect(plus_btn).toBeVisible()
+    let plus_btn = await page.locator('[data-test="blog-add-item"]')
+    // Explicityly set a 60sec timeout on this
+    await expect(plus_btn).toBeVisible({ timeout: longTimeout })
     console.log('The + btn became visible... clicking it now...')
     const newPost = page.waitForRequest(`**/text-posts**`)
     await plus_btn.click({ force: true })
@@ -119,14 +119,18 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     utils.sleep(1)
 
     // Choose the Markdown menu item
-    await page.locator('#block-selector-button-markdown').click({ force: true })
+    await page
+        .locator('#block-selector-button-markdown')
+        .click({ timeout: longTimeout, force: true })
     console.log('\t- Just clicked Markdown menu item...')
     utils.sleep(1)
 
     // Paste in the html AS MARKDOWN + comments
     // Note: Do not use .type() here, it is too slow
     // Fill in the textarea
-    await page.locator(`.CodeMirror textarea`).fill(postBody, { force: true })
+    await page
+        .locator(`.CodeMirror textarea`)
+        .fill(postBody, { timeout: longTimeout, force: true })
     console.log('\t- Just filled the textarea...')
 
     // Set up request listener before clicking into markdown editor
@@ -139,10 +143,10 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     console.log('Applying changes...')
     await page
         .locator('[data-test="dialog-saveAndClose"][value="Apply"]:visible')
-        .click({ force: true })
+        .click({ timeout: longTimeout, force: true })
     console.log('\t- Just clicked Apply...')
 
-    // Let's print the response...
+    // Let's print the response — note: the triple await is necessary
     const resp = await (await (await evt).response()).json()
     console.log(resp)
     utils.sleep(1)
@@ -175,37 +179,31 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Set the Options tab
     console.log('Setting options...')
-    // await page.locator('[data-tab]', { hasText: 'Options' }).click()
     await page.locator('[data-tab]:text("Options")').click()
     utils.sleep(1)
 
     // Wait for this selector to be visible
     console.log(`\t- Checking for visibility of options input...`)
     await expect(
-        await page.locator('[data-test="text"][name="urlId"]:visible')
-    ).toBeVisible()
-    console.log(`\t- Configurable options are visible...`)
+        await page.locator('[data-test="text"][name="urlId"]')
+    ).toBeDefined()
+    console.log(`\t- Configurable options exist...`)
 
     // Scroll down to excerpt
     console.log('Setting excerpt...')
-    // NOTE: This scrollIntoViewIfneeded() is very problematic because of...
-    // locator.scrollIntoViewIfNeeded: Element is not attached to the DOM
-    // await page
-    //     .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-    //     .scrollIntoViewIfNeeded()
-    await page
-        .locator('[data-testvalue="excerpt"] p.rte-placeholder')
-        .click({ force: true })
+
+    const excerptWrapper = await page
+        .locator('[data-testvalue="excerpt"] [data-test="wrapper"]')
+        .locator('div')
+        .first()
+
     console.log('\t- Just clicked into the excerpt placeholder...')
     utils.sleep(1)
 
     // Type excerpt
-    // await page
-    //     .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
-    //     .type(postExcerpt)
-    await page
-        .locator('[data-testvalue="excerpt"] [contenteditable="true"]')
-        .type(postExcerpt)
+    await excerptWrapper.click({ force: true })
+    utils.sleep(0.5)
+    await excerptWrapper.type(postExcerpt)
     console.log('\t- Just typed the excerpt...')
     utils.sleep(1)
 

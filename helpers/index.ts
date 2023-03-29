@@ -416,17 +416,6 @@ const getPostExcerpt = async (gameData) => {
     return excerpt.join('\n')
 }
 
-async function slowDown(factor: number, page: Page) {
-    // Slow it down
-    const client = await page.context().newCDPSession(page)
-    await client.send('Network.emulateNetworkConditions', {
-        offline: false,
-        downloadThroughput: 1000000 / factor,
-        uploadThroughput: 1000000 / factor,
-        latency: 0,
-    })
-}
-
 const loginToSquarespace = async (
     page: Page,
     credentials: LoginCredentials
@@ -436,16 +425,23 @@ const loginToSquarespace = async (
 
     console.log('\t-😢 Not logged in...')
     // Enter credentials
-    await page.locator('[type="email"]').type(credentials.email)
-    await page.locator('[type="password"]').type(credentials.password)
-    await page.locator('[type="password"]').blur()
+    await page.locator('[type="email"]').click()
+    await page.locator('[type="email"]').type(credentials.email, { delay: 25 })
+
+    await page.keyboard.press('Tab')
+
+    await page
+        .locator('[type="password"]')
+        .type(credentials.password, { delay: 25 })
+    await page.keyboard.press('Tab')
 
     console.log(
         'logging into Squarespace, but awaiting 2 things with 60sec timeouts...'
     )
+
     // Await 2 things: click to login + the xhr arising from the click
     const responses = await Promise.all([
-        page.click('[data-test="login-button"]', { timeout: 60000 }),
+        page.locator('[data-test="login-button"]').click(),
         page.waitForURL('**/config/pages**', { timeout: 60000 }),
     ])
     // Log
@@ -520,6 +516,28 @@ const selectLeftNavItem = async (page: Page, leftNavTitle: string) => {
 
 const sleep = (duration: number = 1) => shell.exec(`sleep ${duration}`)
 
+interface SlowDownProps {
+    factor?: number
+    page: Page | null
+    offline?: boolean
+    latency?: number
+}
+async function slowDown({
+    factor = 10,
+    page = null,
+    offline = false,
+    latency = 0,
+}: SlowDownProps): Promise<any> {
+    // Slow it down
+    const client = await page.context().newCDPSession(page)
+    await client.send('Network.emulateNetworkConditions', {
+        offline: offline,
+        downloadThroughput: 1000000 / factor,
+        uploadThroughput: 1000000 / factor,
+        latency: latency,
+    })
+}
+
 const write = (
     text: string | Object,
     file_path: string,
@@ -545,6 +563,7 @@ const utils = {
     read,
     selectLeftNavItem,
     sleep,
+    slowDown,
     write,
 }
 

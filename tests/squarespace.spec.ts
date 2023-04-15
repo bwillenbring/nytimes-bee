@@ -18,6 +18,7 @@ const squarespaceCredentials = {
 
 test.use({
     storageState: {},
+    headless: false,
 })
 
 test.beforeAll(async () => {
@@ -56,12 +57,6 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     const clues = await utils.getCluesAsJson(page)
     const postBody = await utils.getPostBody(clues)
     const postExcerpt = await utils.getPostExcerpt(clues)
-
-    // const postTitle = `Testing ${Date.now()}`
-    // const clues = { testing: true }
-    // const postBody =
-    //     'Another test — Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus tincidunt tortor ac rutrum efficitur. Duis a condimentum ex. Aenean ac gravida erat. Nulla tristique, est eu hendrerit luctus, diam urna hendrerit ante, id maximus elit urna sit amet eros. Suspendisse vitae purus leo. Donec id tempor ligula, sed vestibulum tortor. Etiam sapien libero, rutrum eget tincidunt eu, malesuada venenatis sapien. Proin quis ipsum vitae metus egestas placerat. Pellentesque in turpis euismod, finibus dolor vitae, placerat nibh. Pellentesque at aliquet turpis, non varius nulla.'
-    // const postExcerpt = `Wow\nyou are fast`
 
     console.log(`✅ postTitle:\n${postTitle}`)
     console.log(sep)

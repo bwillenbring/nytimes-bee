@@ -441,7 +441,7 @@ const loginToSquarespace = async (
 
     // Await 2 things: click to login + the xhr arising from the click
     const responses = await Promise.all([
-        page.locator('[data-test="login-button"]').click(),
+        page.locator('[data-test="login-button"]:enabled').click(),
         page.waitForURL('**/config/pages**', { timeout: 60000 }),
     ])
     // Log

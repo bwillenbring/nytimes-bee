@@ -122,7 +122,6 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Paste in the html AS MARKDOWN + comments
     // Note: Do not use .type() here, it is too slow
-    // Fill in the textarea
     await page
         .locator(`.CodeMirror textarea`)
         .fill(postBody, { timeout: longTimeout, force: true })

@@ -420,44 +420,44 @@ const loginToSquarespace = async (
     page: Page,
     credentials: LoginCredentials
 ) => {
-    // Go to the login page
-    await page.goto('https://home-office-employee.squarespace.com/config/pages')
-
-    console.log('\t-😢 Not logged in...')
+    // Go to the login page and wait for the redirect
+    await Promise.all([
+        page.goto('https://home-office-employee.squarespace.com/config/pages'),
+        page.waitForNavigation({ url: /authorize\?client_id/gim }),
+    ])
+    await console.log('\t-😢 Not logged in...')
     // Enter credentials
     await page.locator('[type="email"]').click()
     await page.locator('[type="email"]').type(credentials.email, { delay: 25 })
-
     await page.keyboard.press('Tab')
-
     await page
         .locator('[type="password"]')
         .type(credentials.password, { delay: 25 })
     await page.keyboard.press('Tab')
-
-    console.log(
-        'logging into Squarespace, but awaiting 2 things with 60sec timeouts...'
-    )
+    // Log
+    console.log('logging in, but awaiting 2 things with 60sec timeouts...')
 
     // Await 2 things: click to login + the xhr arising from the click
     const responses = await Promise.all([
-        page.locator('[data-test="login-button"]:enabled').click(),
-        page.waitForURL('**/config/pages**', { timeout: 60000 }),
+        page
+            .locator('[data-test="login-button"]:enabled')
+            .click({ timeout: 60000 }),
+        page.waitForNavigation({ url: /config\/pages/gim, timeout: 60000 }),
     ])
     // Log
-    console.log('\t-Just clicked login, waiting for xhr to respond w 200...')
-    // Assert that the xhr responds with 200 status code
+    console.log('\t-Just clicked login AND confirmed redirect to config/pages')
+    // Define the ui
+    const ui = await page.locator('[data-test="appshell-container"]')
+    // Assert that the UI exists
     console.log(`\t- Waiting for ui to render [data-test="appshell-container"]`)
-    await expect(
-        await page.locator('[data-test="appshell-container"]')
-    ).toBeDefined()
+    await expect(ui).toBeDefined()
 
     // --------------------------------------------------
-    console.log('👇🏽 One final UI assertion (another 60sec timeout!')
-    // Make ui assertion with generous timeout
-    await expect(
-        await page.locator('[data-test="appshell-container"]')
-    ).toBeVisible({ timeout: 60000 })
+    console.log(
+        `\t- UI exists! Now waiting for UI to become visible (another 60sec timeout!)`
+    )
+    // Assert that the UI is visible
+    await expect(ui).toBeVisible({ timeout: 60000 })
     console.log(`\t- 👍🏽 URL is now ${page.url()}`)
     console.log(`\t- Persisting storageState`)
     await persistStorageState(page)

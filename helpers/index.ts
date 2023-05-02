@@ -443,12 +443,16 @@ const loginToSquarespace = async (
     // Enter credentials
     const emailInput = await page.locator('[type="email"]')
     const passwordInput = await page.getByPlaceholder('Password')
-    await emailInput.click()
-    await emailInput.clear()
-    await emailInput.type(credentials.email, { delay: 25 })
-    await page.keyboard.press('Tab')
-    await passwordInput.click()
-    await passwordInput.clear()
+
+    // Enter email inside await Promise.all()
+    await Promise.all([
+        emailInput.type(credentials.email, { delay: 25 }),
+        page.keyboard.press('Tab'),
+        page.waitForRequest(/recaptcha\/enterprise/gim),
+        page.waitForRequest(/api\/1\/login/gim),
+    ])
+
+    // Enter password
     await passwordInput.type(credentials.password, { delay: 25 })
     await page.keyboard.press('Tab')
 
@@ -467,16 +471,30 @@ const loginToSquarespace = async (
     // Await 3 things:
     const responses = await Promise.all([
         page.locator('[data-test="login-button"]:enabled').click(),
-        page.waitForRequest(/recaptcha\/enterprise/gim),
-        page.waitForRequest(/api\/1\/login\/user/gim),
+        page.waitForResponse(/recaptcha\/enterprise/gim),
+        page.waitForResponse(/api\/1\/login\/user/gim),
     ])
-    console.log('\t- ✅ All 3 things good')
+    // --------------------------------------------------
+    // Print the responses
+    const r1 = await responses[1]
+    const r2 = await responses[2]
+    console.log('\t- ✅ xhr responses...')
+    console.log(`\t- recaptcha status: ${await r1.status()}`)
+    console.log(`\t- api/1/login. status: ${await r2.status()}`)
+    // --------------------------------------------------
+
     console.log('\t- Force redirecting to config/pages')
     // Force the url change
     await page.goto(
         'https://home-office-employee.squarespace.com/config/pages',
         { waitUntil: 'domcontentloaded' }
     )
+    // Scree4nshot
+    await testInfo.attach('Supposedly logged in', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+    })
+
     // Await the url change
     // await page.waitForURL(/config\/pages/gim, { timeout: 90000 })
 

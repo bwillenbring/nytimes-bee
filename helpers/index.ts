@@ -4,6 +4,7 @@ import {
     APIRequestContext,
     expect,
     TestInfo,
+    Locator,
 } from '@playwright/test'
 import { stat } from 'fs'
 
@@ -458,18 +459,22 @@ const loginToSquarespace = async (
     })
 
     // TODO: Remove this
-    sleep(3)
+    // sleep(3)
 
     // Log
-    console.log('logging in, but awaiting 2 things with 60sec timeouts...')
+    console.log('logging in, but awaiting 3 things...')
 
-    // Await 2 things: click to login + the xhr arising from the click
+    // Await 3 things:
     const responses = await Promise.all([
-        page
-            .locator('[data-test="login-button"]:enabled')
-            .click({ timeout: 60000 }),
-        page.waitForURL(/config\/pages/gim, { timeout: 60000 }),
+        page.locator('[data-test="login-button"]:enabled').click(),
+        page.waitForRequest(/recaptcha\/enterprise/gim),
+        page.waitForRequest(/api\/1\/login\/user/gim),
     ])
+    console.log('\t- ✅ All 3 things good')
+
+    // Await the url change
+    await page.waitForURL(/config\/pages/gim, { timeout: 60000 })
+
     // Log
     console.log('\t-Just clicked login AND confirmed redirect to config/pages')
     // Define the ui

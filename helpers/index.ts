@@ -458,8 +458,8 @@ const loginToSquarespace = async (
         contentType: 'image/png',
     })
 
-    // TODO: Remove this
-    // sleep(3)
+    TODO: Remove this
+    sleep(1)
 
     // Log
     console.log('logging in, but awaiting 3 things...')
@@ -471,9 +471,11 @@ const loginToSquarespace = async (
         page.waitForRequest(/api\/1\/login\/user/gim),
     ])
     console.log('\t- ✅ All 3 things good')
+    // TODO: Remove this
+    sleep(2)
 
     // Await the url change
-    await page.waitForURL(/config\/pages/gim, { timeout: 60000 })
+    await page.waitForURL(/config\/pages/gim, { timeout: 90000 })
 
     // Log
     console.log('\t-Just clicked login AND confirmed redirect to config/pages')

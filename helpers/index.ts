@@ -458,7 +458,7 @@ const loginToSquarespace = async (
         contentType: 'image/png',
     })
 
-    TODO: Remove this
+    // TODO: Remove this
     sleep(1)
 
     // Log

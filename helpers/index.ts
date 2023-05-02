@@ -441,7 +441,7 @@ const loginToSquarespace = async (
 
     // Enter credentials
     const emailInput = await page.locator('[type="email"]')
-    const passwordInput = await page.locator('[type="email"]')
+    const passwordInput = await page.getByPlaceholder('Password')
     await emailInput.click()
     await emailInput.clear()
     await emailInput.type(credentials.email, { delay: 25 })

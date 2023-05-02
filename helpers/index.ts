@@ -489,7 +489,7 @@ const loginToSquarespace = async (
         'https://home-office-employee.squarespace.com/config/pages',
         { waitUntil: 'domcontentloaded' }
     )
-    // Scree4nshot
+    // Screeenshot
     await testInfo.attach('Supposedly logged in', {
         body: await page.screenshot({ fullPage: true }),
         contentType: 'image/png',

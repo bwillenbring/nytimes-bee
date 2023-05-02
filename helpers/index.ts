@@ -430,7 +430,7 @@ const loginToSquarespace = async (
     // Go to the login page and wait for the redirect
     await Promise.all([
         page.goto('https://home-office-employee.squarespace.com/config/pages'),
-        page.waitForNavigation({ url: /authorize\?client_id/gim }),
+        page.waitForURL(/authorize\?client_id/gim, { timeout: 60000 }),
         page.waitForRequest(/config\/pages/gim),
         page.waitForRequest(/oauth\/provider\/authorize/gim),
     ])
@@ -468,7 +468,7 @@ const loginToSquarespace = async (
         page
             .locator('[data-test="login-button"]:enabled')
             .click({ timeout: 60000 }),
-        page.waitForNavigation({ url: /config\/pages/gim, timeout: 60000 }),
+        page.waitForURL(/config\/pages/gim, { timeout: 60000 }),
     ])
     // Log
     console.log('\t-Just clicked login AND confirmed redirect to config/pages')

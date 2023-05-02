@@ -15,14 +15,23 @@ jobs:
     test:
         timeout-minutes: 10
         runs-on: ubuntu-latest
+        env:
+            API_URL_T: '${{ secrets.API_URL_T }}'
+            API_KEY_T: '${{ secrets.API_KEY_T }}'
+            API_KEY_D: '${{ secrets.API_KEY_D }}'
+            API_URL_D: '${{ secrets.API_URL_D }}'
+            SQ_EMAIL: '${{ secrets.SQ_EMAIL }}'
+            SQ_PASSWORD: '${{ secrets.SQ_PASSWORD }}'
+            SS_PASSWORD: '${{ secrets.SS_PASSWORD }}'
         steps:
             - uses: actions/checkout@v3
             - uses: actions/setup-node@v3
               with:
-                  node-version: 18
-                  cache: 'npm'
+                  node-version: 16
+                  # cache: 'npm'
+                  cache: yarn
             - name: Install dependencies
-              run: npm ci
+              run: yarn
 
             - name: Install only chromium Playwright Browser
               run: npx playwright install chromium --with-deps
@@ -32,7 +41,7 @@ jobs:
               run: |
                   echo Making fixtures dir
                   mkdir fixtures
-                  SS_PASSWORD='${{ secrets.SS_PASSWORD }}' SQ_EMAIL='${{ secrets.SQ_EMAIL }}' SQ_PASSWORD='${{ secrets.SQ_PASSWORD }}' API_URL_T='${{ secrets.API_URL_T }}' API_URL_D='${{ secrets.API_URL_D }}' API_KEY_T='${{ secrets.API_KEY_T }}' API_KEY_D='${{ secrets.API_KEY_D }}' xvfb-run npx playwright test squarespace
+                  xvfb-run npx playwright test squarespace
                   ls -l
             - uses: actions/upload-artifact@v3
               if: always()

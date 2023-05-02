@@ -1,4 +1,10 @@
-import { Page, request, APIRequestContext, expect } from '@playwright/test'
+import {
+    Page,
+    request,
+    APIRequestContext,
+    expect,
+    TestInfo,
+} from '@playwright/test'
 import { stat } from 'fs'
 
 const shell = require('shelljs')
@@ -418,7 +424,8 @@ const getPostExcerpt = async (gameData) => {
 
 const loginToSquarespace = async (
     page: Page,
-    credentials: LoginCredentials
+    credentials: LoginCredentials,
+    testInfo: TestInfo
 ) => {
     // Go to the login page and wait for the redirect
     await Promise.all([
@@ -428,14 +435,25 @@ const loginToSquarespace = async (
         page.waitForRequest(/oauth\/provider\/authorize/gim),
     ])
     await console.log('\t-😢 Not logged in...')
+
+    // Show the password
+    await page.locator('button[aria-label="Show password"]').click()
+
     // Enter credentials
     await page.locator('[type="email"]').click()
     await page.locator('[type="email"]').type(credentials.email, { delay: 25 })
     await page.keyboard.press('Tab')
     await page
-        .locator('[type="password"]')
+        .getByPlaceholder('Password')
         .type(credentials.password, { delay: 25 })
     await page.keyboard.press('Tab')
+
+    // Screenshot
+    await testInfo.attach('User-provided credentials', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+    })
+
     // Log
     console.log('logging in, but awaiting 2 things with 60sec timeouts...')
 

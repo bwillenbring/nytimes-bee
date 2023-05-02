@@ -69,7 +69,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Login
     console.log(`Logging in...`)
-    await utils.loginToSquarespace(page, squarespaceCredentials)
+    await utils.loginToSquarespace(page, squarespaceCredentials, testInfo)
     console.log(`\t- Logged in, waiting to navigate to 🐝 Clues...`)
     utils.sleep(2)
 

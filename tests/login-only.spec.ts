@@ -32,6 +32,6 @@ test('logs in', async ({ page }, testInfo) => {
     // })
 
     utils.sleep(2)
-    await utils.loginToSquarespace(page, squarespaceCredentials)
+    await utils.loginToSquarespace(page, squarespaceCredentials, testInfo)
     utils.sleep(2)
 })

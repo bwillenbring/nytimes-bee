@@ -440,12 +440,15 @@ const loginToSquarespace = async (
     await page.locator('button[aria-label="Show password"]').click()
 
     // Enter credentials
-    await page.locator('[type="email"]').click()
-    await page.locator('[type="email"]').type(credentials.email, { delay: 25 })
+    const emailInput = await page.locator('[type="email"]')
+    const passwordInput = await page.locator('[type="email"]')
+    await emailInput.click()
+    await emailInput.clear()
+    await emailInput.type(credentials.email, { delay: 25 })
     await page.keyboard.press('Tab')
-    await page
-        .getByPlaceholder('Password')
-        .type(credentials.password, { delay: 25 })
+    await passwordInput.click()
+    await passwordInput.clear()
+    await passwordInput.type(credentials.password, { delay: 25 })
     await page.keyboard.press('Tab')
 
     // Screenshot
@@ -453,6 +456,9 @@ const loginToSquarespace = async (
         body: await page.screenshot({ fullPage: true }),
         contentType: 'image/png',
     })
+
+    // TODO: Remove this
+    sleep(3)
 
     // Log
     console.log('logging in, but awaiting 2 things with 60sec timeouts...')

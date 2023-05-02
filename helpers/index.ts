@@ -424,6 +424,8 @@ const loginToSquarespace = async (
     await Promise.all([
         page.goto('https://home-office-employee.squarespace.com/config/pages'),
         page.waitForNavigation({ url: /authorize\?client_id/gim }),
+        page.waitForRequest(/config\/pages/gim),
+        page.waitForRequest(/oauth\/provider\/authorize/gim),
     ])
     await console.log('\t-😢 Not logged in...')
     // Enter credentials

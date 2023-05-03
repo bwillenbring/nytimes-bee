@@ -1,4 +1,4 @@
-import { test, expect, Locator, chromium } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { utils } from '../helpers'
 const sep = '-'.repeat(75)
 
@@ -41,7 +41,6 @@ test.beforeAll(async () => {
 test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
     // Because networking on github runners is 💩
     test.slow()
-    await chromium.launch({ headless: false, slowMo: 750 })
     console.log('Setting default test timeout to 120000 ms')
     test.setTimeout(120000)
 

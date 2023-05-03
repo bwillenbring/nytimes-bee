@@ -435,9 +435,6 @@ const loginToSquarespace = async (
     ])
     await console.log('\t-😢 Not logged in...')
 
-    // Show the password
-    await page.locator('button[aria-label="Show password"]').click()
-
     // Get locators for username and password inputs
     const emailInput = await page.locator('[type="email"]')
     const passwordInput = await page.getByPlaceholder('Password')

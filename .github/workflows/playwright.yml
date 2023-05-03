@@ -20,9 +20,9 @@ jobs:
             API_KEY_T: '${{ secrets.API_KEY_T }}'
             API_KEY_D: '${{ secrets.API_KEY_D }}'
             API_URL_D: '${{ secrets.API_URL_D }}'
-            SQ_EMAIL: '${{ secrets.SQ_EMAIL }}'
+            SQ_EMAIL: ${{ secrets.SQ_EMAIL }}
             SQ_PASSWORD: '${{ secrets.SQ_PASSWORD }}'
-            SS_PASSWORD: '${{ secrets.SS_PASSWORD }}'
+            SS_PASSWORD: ${{ secrets.SS_PASSWORD }}
         steps:
             - uses: actions/checkout@v3
               with:

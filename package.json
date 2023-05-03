@@ -1,30 +1,29 @@
 {
-  "name": "nytimes-bee",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "test": "npm run lint",
-    "lint": "eslint . --ext .js"
-  },
-  "keywords": [],
-  "author": "Benjamin Willenbring",
-  "license": "ISC",
-  "dependencies": {
-    "cheerio": "^1.0.0-rc.12",
-    "dayjs": "^1.11.4",
-    "lodash": "^4.17.21",
-    "playwright": "^1.32.1",
-    "rita": "^2.8.1"
-  },
-  "devDependencies": {
-    "@playwright/test": "^1.32.1",
-    "@types/node": "^18.11.18",
-    "eslint": "^8.2.0",
-    "eslint-config-prettier": "^8.3.0",
-    "eslint-plugin-cypress": "^2.12.1",
-    "eslint-plugin-sonarjs": "^0.14.0",
-    "prettier": "2.4.1",
-    "shelljs": "^0.8.5"
-  }
+    "name": "nytimes-bee",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "test": "npm run lint",
+        "lint": "eslint . --ext .js"
+    },
+    "keywords": [],
+    "author": "Benjamin Willenbring",
+    "license": "ISC",
+    "dependencies": {
+        "cheerio": "^1.0.0-rc.12",
+        "dayjs": "^1.11.4",
+        "lodash": "^4.17.21",
+        "rita": "^2.8.1"
+    },
+    "devDependencies": {
+        "@playwright/test": "^1.32.1",
+        "@types/node": "^18.11.18",
+        "eslint": "^8.2.0",
+        "eslint-config-prettier": "^8.3.0",
+        "eslint-plugin-cypress": "^2.12.1",
+        "eslint-plugin-sonarjs": "^0.14.0",
+        "prettier": "2.4.1",
+        "shelljs": "^0.8.5"
+    }
 }

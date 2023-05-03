@@ -1,4 +1,4 @@
-import { test, expect, Locator } from '@playwright/test'
+import { test, expect } from '@playwright/test'
 import { utils } from '../helpers'
 const sep = '-'.repeat(75)
 
@@ -69,7 +69,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Login
     console.log(`Logging in...`)
-    await utils.loginToSquarespace(page, squarespaceCredentials)
+    await utils.loginToSquarespace(page, squarespaceCredentials, testInfo)
     console.log(`\t- Logged in, waiting to navigate to 🐝 Clues...`)
     utils.sleep(2)
 

@@ -1,4 +1,11 @@
-import { Page, request, APIRequestContext, expect } from '@playwright/test'
+import {
+    Page,
+    request,
+    APIRequestContext,
+    expect,
+    TestInfo,
+    Locator,
+} from '@playwright/test'
 import { stat } from 'fs'
 
 const shell = require('shelljs')
@@ -418,32 +425,70 @@ const getPostExcerpt = async (gameData) => {
 
 const loginToSquarespace = async (
     page: Page,
-    credentials: LoginCredentials
+    credentials: LoginCredentials,
+    testInfo: TestInfo
 ) => {
     // Go to the login page and wait for the redirect
     await Promise.all([
         page.goto('https://home-office-employee.squarespace.com/config/pages'),
-        page.waitForNavigation({ url: /authorize\?client_id/gim }),
+        page.waitForURL(/authorize\?client_id/gim, { timeout: 60000 }),
     ])
     await console.log('\t-😢 Not logged in...')
-    // Enter credentials
-    await page.locator('[type="email"]').click()
-    await page.locator('[type="email"]').type(credentials.email, { delay: 25 })
-    await page.keyboard.press('Tab')
-    await page
-        .locator('[type="password"]')
-        .type(credentials.password, { delay: 25 })
-    await page.keyboard.press('Tab')
-    // Log
-    console.log('logging in, but awaiting 2 things with 60sec timeouts...')
 
-    // Await 2 things: click to login + the xhr arising from the click
-    const responses = await Promise.all([
-        page
-            .locator('[data-test="login-button"]:enabled')
-            .click({ timeout: 60000 }),
-        page.waitForNavigation({ url: /config\/pages/gim, timeout: 60000 }),
+    // Get locators for username and password inputs
+    const emailInput = await page.locator('[type="email"]')
+    const passwordInput = await page.getByPlaceholder('Password')
+
+    // Enter email
+    emailInput.type(credentials.email, { delay: 25 })
+    // Tab out of email and await xhrs separately
+    await Promise.all([
+        page.keyboard.press('Tab'),
+        page.waitForResponse(/recaptcha\/enterprise\/reload/gim),
+        page.waitForResponse(/api\/1\/login/gim),
     ])
+
+    // Enter password
+    await passwordInput.type(credentials.password, { delay: 25 })
+    await page.keyboard.press('Tab')
+
+    // Screenshot
+    await testInfo.attach('User-provided credentials', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+    })
+
+    // Log
+    console.log('logging in, but awaiting 3 things...')
+
+    // Await 3 things:
+    const responses = await Promise.all([
+        page.locator('[data-test="login-button"]:enabled').click(),
+        page.waitForResponse(/recaptcha\/enterprise/gim),
+        page.waitForResponse(/api\/1\/login\/user/gim),
+        page.waitForResponse(/api\/events\/RecordEvent/gim),
+        page.waitForResponse(/sentry\.io/gim),
+    ])
+    // --------------------------------------------------
+    // Print the responses
+    const r1 = await responses[1]
+    const r2 = await responses[2]
+    const r3 = await responses[3]
+    console.log('\t- ✅ xhr responses...')
+    console.log(`\t- r1. recaptcha status: ${await r1.status()}`)
+    console.log(`\t- r2. api/1/login. status: ${await r2.status()}`)
+    console.log(`\t - r3. RecordEvent: ${await r3.body()}`)
+    // --------------------------------------------------
+
+    // Screeenshot
+    await testInfo.attach('Supposedly logged in', {
+        body: await page.screenshot({ fullPage: true }),
+        contentType: 'image/png',
+    })
+
+    // Await the url change
+    // await page.waitForURL(/config\/pages/gim, { timeout: 90000 })
+
     // Log
     console.log('\t-Just clicked login AND confirmed redirect to config/pages')
     // Define the ui

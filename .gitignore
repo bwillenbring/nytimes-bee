@@ -127,3 +127,4 @@ storageState.json
 test-results* 
 fixtures/*.json
 fixtures/*.html
+*.gpg

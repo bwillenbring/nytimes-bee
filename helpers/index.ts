@@ -432,24 +432,23 @@ const loginToSquarespace = async (
     await Promise.all([
         page.goto('https://home-office-employee.squarespace.com/config/pages'),
         page.waitForURL(/authorize\?client_id/gim, { timeout: 60000 }),
-        page.waitForRequest(/config\/pages/gim),
-        page.waitForRequest(/oauth\/provider\/authorize/gim),
     ])
     await console.log('\t-😢 Not logged in...')
 
     // Show the password
     await page.locator('button[aria-label="Show password"]').click()
 
-    // Enter credentials
+    // Get locators for username and password inputs
     const emailInput = await page.locator('[type="email"]')
     const passwordInput = await page.getByPlaceholder('Password')
 
-    // Enter email inside await Promise.all()
+    // Enter email
+    emailInput.type(credentials.email, { delay: 25 })
+    // Tab out of email and await xhrs separately
     await Promise.all([
-        emailInput.type(credentials.email, { delay: 25 }),
         page.keyboard.press('Tab'),
-        page.waitForRequest(/recaptcha\/enterprise/gim),
-        page.waitForRequest(/api\/1\/login/gim),
+        page.waitForResponse(/recaptcha\/enterprise\/reload/gim),
+        page.waitForResponse(/api\/1\/login/gim),
     ])
 
     // Enter password
@@ -462,9 +461,6 @@ const loginToSquarespace = async (
         contentType: 'image/png',
     })
 
-    // TODO: Remove this
-    sleep(3)
-
     // Log
     console.log('logging in, but awaiting 3 things...')
 
@@ -473,22 +469,20 @@ const loginToSquarespace = async (
         page.locator('[data-test="login-button"]:enabled').click(),
         page.waitForResponse(/recaptcha\/enterprise/gim),
         page.waitForResponse(/api\/1\/login\/user/gim),
+        page.waitForResponse(/api\/events\/RecordEvent/gim),
+        page.waitForResponse(/sentry\.io/gim),
     ])
     // --------------------------------------------------
     // Print the responses
     const r1 = await responses[1]
     const r2 = await responses[2]
+    const r3 = await responses[3]
     console.log('\t- ✅ xhr responses...')
-    console.log(`\t- recaptcha status: ${await r1.status()}`)
-    console.log(`\t- api/1/login. status: ${await r2.status()}`)
+    console.log(`\t- r1. recaptcha status: ${await r1.status()}`)
+    console.log(`\t- r2. api/1/login. status: ${await r2.status()}`)
+    console.log(`\t - r3. RecordEvent: ${await r3.body()}`)
     // --------------------------------------------------
 
-    console.log('\t- Force redirecting to config/pages')
-    // Force the url change
-    await page.goto(
-        'https://home-office-employee.squarespace.com/config/pages',
-        { waitUntil: 'domcontentloaded' }
-    )
     // Screeenshot
     await testInfo.attach('Supposedly logged in', {
         body: await page.screenshot({ fullPage: true }),

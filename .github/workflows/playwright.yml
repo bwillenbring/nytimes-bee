@@ -9,8 +9,6 @@ on:
     push:
         branches:
             - fix/*
-    # pull_request:
-    #     branches: [main, master]
 jobs:
     test:
         timeout-minutes: 10

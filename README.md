@@ -8,6 +8,6 @@
 
 ## Sample Clues
 
-[View sample here](https://www.ben-willenbring.com/bee-clues/nyt-cluestue-20-september-2022).
+[View sample here](https://www.ben-willenbring.com/bee-clues/nyt-cluestue-22-august-2023).
 
 <img src="./img/screenshot-browser-and-phone.png"/>

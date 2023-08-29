@@ -13,7 +13,7 @@ test.use({
 })
 
 test.beforeEach(async ({ page }) => {
-    const blogURL = '/config/pages/62e1297259707700d7654d86'
+    const blogURL = '/config/website/pages/62e1297259707700d7654d86'
     await page.goto(blogURL, {
         waitUntil: 'domcontentloaded',
     })

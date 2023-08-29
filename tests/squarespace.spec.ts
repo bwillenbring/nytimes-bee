@@ -75,7 +75,7 @@ test('posts nytimes bee clues to squarespace', async ({ page }, testInfo) => {
 
     // Navigate to NYTimes 🐝 Clues
     const blogURL =
-        'https://home-office-employee.squarespace.com/config/pages/62e1297259707700d7654d86'
+        'https://home-office-employee.squarespace.com/config/website/pages/62e1297259707700d7654d86'
     await page.goto(blogURL, {
         waitUntil: 'domcontentloaded',
     })
